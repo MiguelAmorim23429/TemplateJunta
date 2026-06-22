@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@500;600;700;800&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; }
+    * { transition: background-color .45s ease, color .35s ease, border-color .45s ease, fill .35s ease; }
+    *:focus-visible { outline: 3px solid var(--cor-acento, #c79a3e); outline-offset: 2px; border-radius: 4px; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+    a.skip-link { position: absolute; left: 14px; top: -64px; z-index: 300; background: var(--cor-primaria, #1d4e89); color: #fff; padding: 12px 18px; border-radius: 0 0 10px 10px; font-weight: 700; text-decoration: none; transition: top .2s ease; }
+    a.skip-link:focus { top: 0; }
+  </style>
+</helmet>
+
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#1d4e89"/>
+    <circle cx="50" cy="44" r="22" fill="none" stroke="#c79a3e" stroke-width="3"/>
+    <text x="50" y="52" font-family="sans-serif" font-size="20" font-weight="800" fill="#fff" text-anchor="middle">VV</text>
+    <rect x="30" y="74" width="40" height="6" rx="3" fill="#c79a3e"/>
+  </svg>
+</template>
+<div ref="{{ setRoot }}" style="{{ rootStyle }}">
+  <a class="skip-link" href="#municipe">Saltar para o conteúdo principal</a>
+
+  <!-- ===== BARRA UTILITÁRIA ===== -->
+  <div style="background: var(--cor-secundaria, #15395f); color: rgba(255,255,255,.82); font-size: 13px;">
+    <div style="max-width: 1240px; margin: 0 auto; padding: 9px clamp(20px,5vw,44px); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 22px;">
+      <div style="display: flex; align-items: center; gap: 22px; flex-wrap: wrap;">
+        <a href="tel:+351200000000" style="display: inline-flex; align-items: center; gap: 7px; color: inherit; text-decoration: none; font-weight: 500;"><span style="{{ icPhone }}"></span>+351 200 000 000</a>
+        <a href="#municipe" style="display: inline-flex; align-items: center; gap: 7px; color: inherit; text-decoration: none; font-weight: 500;"><span style="{{ icHead }}"></span>Atendimento Online</a>
+        <span style="display: inline-flex; align-items: center; gap: 7px; opacity: .7;">Seg–Sex · 9h00–16h30</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+        <span style="display: inline-flex; align-items: center; gap: 6px; opacity: .85;"><span style="{{ icGlobe }}"></span>
+          <button onClick="{{ setPT }}" style="background: none; border: none; color: inherit; cursor: pointer; font-weight: 700; font-size: 13px; padding: 2px 4px; opacity: {{ ptOpacity }};">PT</button>
+          <span style="opacity:.4;">|</span>
+          <button onClick="{{ setEN }}" style="background: none; border: none; color: inherit; cursor: pointer; font-weight: 500; font-size: 13px; padding: 2px 4px; opacity: {{ enOpacity }};">EN</button>
+        </span>
+        <div style="display: flex; align-items: center; gap: 10px; padding: 4px 10px 4px 14px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);">
+          <span style="opacity: .85; font-weight: 600; font-size: 12px;">Tema</span>
+          <div style="display: flex; align-items: center; gap: 7px;">
+            <sc-for list="{{ swatches }}" as="sw" hint-placeholder-count="5">
+              <button onClick="{{ sw.onClick }}" title="{{ sw.nome }}" aria-label="{{ sw.aria }}" style="{{ sw.style }}"></button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CABEÇALHO ===== -->
+  <header style="position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,.82); backdrop-filter: saturate(160%) blur(14px); -webkit-backdrop-filter: saturate(160%) blur(14px); border-bottom: 1px solid rgba(0,0,0,.07);">
+    <div style="max-width: 1240px; margin: 0 auto; padding: 0 clamp(20px,5vw,44px); height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+      <a href="#inicio" title="Logótipo de exemplo — substituir pelo brasão do município" style="display: flex; align-items: center; gap: 13px; text-decoration: none;">
+        <div style="position: relative; width: 50px; height: 50px; border-radius: 16px; background: var(--cor-primaria, #1d4e89); display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 2px var(--cor-acento, #c79a3e), 0 8px 20px -10px var(--cor-primaria, #1d4e89); flex-shrink: 0;">
+          <span style="font-family: 'Libre Franklin', sans-serif; font-weight: 800; color: #fff; font-size: 17px; letter-spacing: 1px;">VV</span>
+        </div>
+        <div style="line-height: 1.15;">
+          <div style="font-size: 11px; letter-spacing: .13em; text-transform: uppercase; color: #6b7280; font-weight: 600;">Câmara Municipal</div>
+          <div style="font-family: 'Libre Franklin', sans-serif; font-weight: 700; font-size: 19px; color: var(--cor-texto, #1b2733);">Vale Verde</div>
+        </div>
+      </a>
+
+      <sc-if value="{{ desktopNav }}" hint-placeholder-val="{{ true }}">
+        <nav style="display: flex; align-items: center; gap: 2px;">
+          <sc-for list="{{ navLinks }}" as="lk" hint-placeholder-count="6">
+            <a href="{{ lk.href }}" style="color: var(--cor-texto, #1b2733); text-decoration: none; font-weight: 600; font-size: 15px; padding: 9px 13px; border-radius: 9px;" style-hover="{{ navHover }}">{{ lk.label }}</a>
+          </sc-for>
+          <a href="#municipe" style="margin-left: 10px; background: var(--cor-primaria, #1d4e89); color: #fff; padding: 11px 18px; border-radius: 11px; font-weight: 700; font-size: 14px; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 10px 22px -12px var(--cor-primaria, #1d4e89);" style-hover="{{ btnHover }}">Balcão Virtual<span style="{{ icArrowW }}"></span></a>
+        </nav>
+      </sc-if>
+
+      <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ toggleMenu }}" aria-label="Abrir menu" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: var(--cor-tint, #e7eef7); border: none; border-radius: 12px; cursor: pointer;">
+          <span style="{{ icMenu }}"></span>
+        </button>
+      </sc-if>
+    </div>
+
+    <sc-if value="{{ showMobileMenu }}" hint-placeholder-val="{{ false }}">
+      <nav style="border-top: 1px solid rgba(0,0,0,.07); background: #fff; padding: 6px clamp(20px,5vw,44px) 16px;">
+        <sc-for list="{{ mobileNav }}" as="lk" hint-placeholder-count="6">
+          <a href="{{ lk.href }}" onClick="{{ lk.onClick }}" style="display: flex; align-items: center; min-height: 50px; padding: 4px 6px; border-bottom: 1px solid rgba(0,0,0,.06); color: var(--cor-texto, #1b2733); text-decoration: none; font-weight: 600; font-size: 16px;">{{ lk.label }}</a>
+        </sc-for>
+        <a href="#municipe" onClick="{{ closeMenu }}" style="margin-top: 14px; background: var(--cor-primaria, #1d4e89); color: #fff; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 15px; text-decoration: none; min-height: 48px; display: flex; align-items: center; justify-content: center; gap: 8px;">Aceder ao Balcão Virtual</a>
+      </nav>
+    </sc-if>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section id="inicio" style="position: relative; background: radial-gradient(900px 500px at 12% 8%, rgba(255,255,255,.16), transparent 60%), radial-gradient(720px 620px at 94% 110%, var(--cor-acento, #c79a3e), transparent 55%), radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(135deg, var(--cor-secundaria, #15395f), var(--cor-primaria, #1d4e89)); background-size: auto, auto, 24px 24px, auto; color: #fff; overflow: hidden;">
+    <div style="max-width: 1240px; margin: 0 auto; padding: clamp(52px,7vw,96px) clamp(20px,5vw,44px) clamp(60px,8vw,104px); display: flex; gap: clamp(32px,5vw,64px); flex-wrap: wrap; align-items: center;">
+      <div style="flex: 1 1 380px; min-width: 290px;">
+        <div style="display: inline-flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 999px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); margin-bottom: 24px;"><span style="width: 7px; height: 7px; border-radius: 50%; background: var(--cor-acento, #c79a3e); display: inline-block;"></span>Portal do Munícipe · disponível 24h</div>
+        <h1 style="font-family: 'Libre Franklin', sans-serif; font-weight: 800; font-size: clamp(36px,5.2vw,58px); line-height: 1.04; letter-spacing: -0.02em; margin: 0 0 20px; text-wrap: balance;">Tudo o que precisa da sua Câmara, num só lugar.</h1>
+        <p style="font-size: clamp(16px,1.6vw,19px); line-height: 1.6; opacity: .92; max-width: 520px; margin: 0 0 32px;">Serviços online, notícias e informação útil sobre o concelho de Vale Verde — disponíveis a qualquer hora, em qualquer dispositivo.</p>
+        <div style="display: flex; gap: 13px; flex-wrap: wrap;">
+          <a href="#municipe" style="background: #fff; color: var(--cor-primaria, #1d4e89); padding: 15px 24px; border-radius: 12px; font-weight: 700; font-size: 15px; text-decoration: none; min-height: 48px; display: inline-flex; align-items: center; gap: 9px; box-shadow: 0 16px 34px -14px rgba(0,0,0,.6);" style-hover="{{ heroBtnHover }}">Aceder ao Balcão Virtual<span style="{{ icArrow }}"></span></a>
+          <a href="#municipe" style="background: rgba(255,255,255,.1); color: #fff; padding: 15px 24px; border-radius: 12px; font-weight: 700; font-size: 15px; text-decoration: none; min-height: 48px; display: inline-flex; align-items: center; gap: 9px; border: 1px solid rgba(255,255,255,.55);" style-hover="{{ heroGhostHover }}">Reportar uma ocorrência</a>
+        </div>
+      </div>
+
+      <div style="flex: 1 1 430px; min-width: 290px;">
+        <div style="background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 40px 90px -30px rgba(0,0,0,.6); color: var(--cor-texto, #1b2733);">
+          <div style="overflow: hidden; position: relative;">
+            <div style="display: flex; width: 300%; transition: transform .6s cubic-bezier(.4,0,.2,1); transform: translateX(-{{ slideOffset }}%);">
+              <sc-for list="{{ featured }}" as="item" hint-placeholder-count="3">
+                <div style="width: 33.3333%; flex-shrink: 0;">
+                  <div style="height: 210px; background: linear-gradient(135deg, var(--cor-tint, #e7eef7), var(--fundo-suave, #e9eff6)); position: relative; display: flex; align-items: center; justify-content: center;">
+                    <span style="width: 56px; height: 56px; border-radius: 16px; background: #fff; box-shadow: 0 10px 24px -10px rgba(0,0,0,.3); display: flex; align-items: center; justify-content: center;"><span style="{{ item.iconStyle }}"></span></span>
+                    <span style="position: absolute; top: 13px; left: 13px; background: var(--cor-primaria, #1d4e89); color: #fff; padding: 5px 11px; border-radius: 8px; font-size: 12px; font-weight: 700;">{{ item.tag }}</span>
+                    <span style="position: absolute; bottom: 11px; right: 14px; font-family: ui-monospace, 'SFMono-Regular', monospace; font-size: 11px; color: rgba(0,0,0,.4);">imagem · {{ item.imgLabel }}</span>
+                  </div>
+                  <div style="padding: 22px 24px 24px;">
+                    <div style="font-size: 13px; color: #6b7280; font-weight: 600; margin-bottom: 8px;">{{ item.date }}</div>
+                    <h3 style="font-family: 'Libre Franklin', sans-serif; font-size: 21px; font-weight: 700; line-height: 1.25; margin: 0 0 10px;">{{ item.title }}</h3>
+                    <p style="font-size: 15px; color: #4b5563; line-height: 1.55; margin: 0 0 16px;">{{ item.excerpt }}</p>
+                    <a href="#noticias" style="display: inline-flex; align-items: center; gap: 7px; color: var(--cor-primaria, #1d4e89); font-weight: 700; font-size: 14px; text-decoration: none;">Ler notícia<span style="{{ icArrow }}"></span></a>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <button onClick="{{ prev }}" aria-label="Destaque anterior" style="position: absolute; top: 105px; left: 12px; transform: translateY(-50%); width: 42px; height: 42px; border-radius: 50%; border: none; background: rgba(255,255,255,.94); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,.22);"><span style="{{ icChevL }}"></span></button>
+            <button onClick="{{ next }}" aria-label="Destaque seguinte" style="position: absolute; top: 105px; right: 12px; transform: translateY(-50%); width: 42px; height: 42px; border-radius: 50%; border: none; background: rgba(255,255,255,.94); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,.22);"><span style="{{ icChevR }}"></span></button>
+          </div>
+          <div style="display: flex; gap: 8px; justify-content: center; padding: 0 0 18px;">
+            <sc-for list="{{ dots }}" as="d" hint-placeholder-count="3">
+              <button onClick="{{ d.onClick }}" aria-label="{{ d.aria }}" style="{{ d.style }}"></button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ACESSO RÁPIDO ===== -->
+  <section id="municipe" style="background: #fff;">
+    <div data-reveal="" style="opacity: 0; max-width: 1240px; margin: 0 auto; padding: clamp(54px,8vw,96px) clamp(20px,5vw,44px);">
+      <div style="margin-bottom: 38px;">
+        <div style="font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--cor-primaria, #1d4e89); margin-bottom: 10px;">Serviços</div>
+        <h2 style="font-family: 'Libre Franklin', sans-serif; font-weight: 800; font-size: clamp(27px,3.5vw,40px); letter-spacing: -0.01em; color: var(--cor-texto, #1b2733); margin: 0 0 10px; text-wrap: balance;">Acesso rápido aos serviços</h2>
+        <p style="font-size: 16px; color: #6b7280; max-width: 600px; margin: 0; line-height: 1.55;">Resolva sem sair de casa. Os serviços mais procurados pelos munícipes, a um clique de distância.</p>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(212px, 1fr)); gap: 18px;">
+        <sc-for list="{{ quick }}" as="item" hint-placeholder-count="8">
+          <a href="#municipe" style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: #fff; border: 1px solid rgba(0,0,0,.08); border-radius: 18px; text-decoration: none; color: var(--cor-texto, #1b2733); cursor: pointer; min-height: 136px; transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;" style-hover="{{ cardHover }}">
+            <span style="width: 52px; height: 52px; border-radius: 15px; background: var(--cor-tint, #e7eef7); display: flex; align-items: center; justify-content: center;"><span style="{{ item.iconStyle }}"></span></span>
+            <div>
+              <div style="font-family: 'Libre Franklin', sans-serif; font-weight: 700; font-size: 16px; margin-bottom: 4px;">{{ item.label }}</div>
+              <div style="font-size: 13px; color: #6b7280; line-height: 1.4;">{{ item.desc }}</div>
+            </div>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== NOTÍCIAS ===== -->
+  <section id="noticias" style="background: var(--fundo-claro, #f4f7fb);">
+    <div data-reveal="" style="opacity: 0; max-width: 1240px; margin: 0 auto; padding: clamp(54px,8vw,96px) clamp(20px,5vw,44px);">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 34px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--cor-primaria, #1d4e89); margin-bottom: 10px;">Atualidade</div>
+          <h2 style="font-family: 'Libre Franklin', sans-serif; font-weight: 800; font-size: clamp(27px,3.5vw,40px); letter-spacing: -0.01em; color: var(--cor-texto, #1b2733); margin: 0;">Últimas notícias</h2>
+        </div>
+        <a href="#noticias" style="display: inline-flex; align-items: center; gap: 7px; color: var(--cor-primaria, #1d4e89); font-weight: 700; font-size: 15px; text-decoration: none; min-height: 44px;">Ver todas as notícias<span style="{{ icArrow }}"></span></a>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 22px;">
+        <sc-for list="{{ news }}" as="item" hint-placeholder-count="4">
+          <a href="#noticias" style="display: flex; flex-direction: column; background: #fff; border: 1px solid rgba(0,0,0,.07); border-radius: 20px; overflow: hidden; text-decoration: none; color: var(--cor-texto, #1b2733); transition: transform .22s ease, box-shadow .22s ease;" style-hover="{{ newsHover }}">
+            <div style="height: 172px; background: linear-gradient(135deg, var(--cor-tint, #e7eef7), var(--fundo-suave, #e9eff6)); position: relative; display: flex; align-items: center; justify-content: center;">
+              <span style="width: 46px; height: 46px; border-radius: 13px; background: #fff; box-shadow: 0 8px 20px -10px rgba(0,0,0,.3); display: flex; align-items: center; justify-content: center;"><span style="{{ item.iconStyle }}"></span></span>
+              <span style="position: absolute; top: 12px; left: 12px; background: var(--cor-primaria, #1d4e89); color: #fff; padding: 5px 10px; border-radius: 7px; font-size: 11px; font-weight: 700;">{{ item.tag }}</span>
+              <span style="position: absolute; bottom: 10px; right: 12px; font-family: ui-monospace, monospace; font-size: 10px; color: rgba(0,0,0,.4);">imagem · {{ item.imgLabel }}</span>
+            </div>
+            <div style="padding: 20px 22px 24px; display: flex; flex-direction: column; flex: 1;">
+              <div style="font-size: 12px; color: #6b7280; font-weight: 600; margin-bottom: 8px;">{{ item.date }}</div>
+              <h3 style="font-family: 'Libre Franklin', sans-serif; font-size: 18px; font-weight: 700; line-height: 1.3; margin: 0 0 10px;">{{ item.title }}</h3>
+              <p style="font-size: 14px; color: #4b5563; line-height: 1.5; margin: 0 0 16px;">{{ item.excerpt }}</p>
+              <span style="margin-top: auto; display: inline-flex; align-items: center; gap: 6px; color: var(--cor-primaria, #1d4e89); font-weight: 700; font-size: 14px;">Ler mais<span style="{{ icArrowSm }}"></span></span>
+            </div>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== AGENDA ===== -->
+  <section id="agenda" style="background: #fff;">
+    <div data-reveal="" style="opacity: 0; max-width: 1240px; margin: 0 auto; padding: clamp(54px,8vw,96px) clamp(20px,5vw,44px);">
+      <div style="margin-bottom: 34px;">
+        <div style="font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--cor-primaria, #1d4e89); margin-bottom: 10px;">Agenda</div>
+        <h2 style="font-family: 'Libre Franklin', sans-serif; font-weight: 800; font-size: clamp(27px,3.5vw,40px); letter-spacing: -0.01em; color: var(--cor-texto, #1b2733); margin: 0;">Próximos eventos</h2>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <sc-for list="{{ events }}" as="ev" hint-placeholder-count="4">
+          <a href="#agenda" style="display: flex; align-items: center; gap: 20px; padding: 16px 20px; border: 1px solid rgba(0,0,0,.08); border-radius: 16px; text-decoration: none; color: var(--cor-texto, #1b2733); background: #fff; transition: background .25s ease, transform .2s ease, border-color .25s ease;" style-hover="{{ eventHover }}">
+            <div style="flex-shrink: 0; width: 68px; text-align: center; background: var(--cor-primaria, #1d4e89); color: #fff; border-radius: 14px; padding: 12px 6px;">
+              <div style="font-family: 'Libre Franklin', sans-serif; font-size: 24px; font-weight: 800; line-height: 1;">{{ ev.day }}</div>
+              <div style="font-size: 11px; letter-spacing: .1em; opacity: .9; margin-top: 3px;">{{ ev.month }}</div>
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-family: 'Libre Franklin', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 6px;">{{ ev.title }}</div>
+              <div style="display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: #6b7280;">
+                <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="{{ icPin }}"></span>{{ ev.place }}</span>
+                <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="{{ icClock }}"></span>{{ ev.time }}</span>
+              </div>
+            </div>
+            <span style="{{ icEventChev }}"></span>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TRANSPARÊNCIA ===== -->
+  <section id="transparencia" style="background: var(--fundo-suave, #e9eff6);">
+    <div data-reveal="" style="opacity: 0; max-width: 1240px; margin: 0 auto; padding: clamp(54px,8vw,96px) clamp(20px,5vw,44px);">
+      <div style="max-width: 640px; margin-bottom: 38px;">
+        <div style="font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--cor-primaria, #1d4e89); margin-bottom: 10px;">Transparência e Dados Abertos</div>
+        <h2 style="font-family: 'Libre Franklin', sans-serif; font-weight: 800; font-size: clamp(27px,3.5vw,40px); letter-spacing: -0.01em; color: var(--cor-texto, #1b2733); margin: 0 0 12px; text-wrap: balance;">Uma autarquia aberta aos cidadãos</h2>
+        <p style="font-size: 16px; color: #4b5563; line-height: 1.6; margin: 0;">Disponibilizamos de forma clara e acessível a informação sobre as decisões, contas e contratos do município. Porque a confiança constrói-se com transparência.</p>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(272px, 1fr)); gap: 22px;">
+        <sc-for list="{{ transparencia }}" as="item" hint-placeholder-count="3">
+          <a href="#transparencia" style="display: flex; flex-direction: column; gap: 14px; padding: 28px; background: #fff; border: 1px solid rgba(0,0,0,.06); border-radius: 20px; text-decoration: none; color: var(--cor-texto, #1b2733); transition: transform .22s ease, box-shadow .22s ease;" style-hover="{{ cardHover }}">
+            <span style="width: 56px; height: 56px; border-radius: 16px; background: var(--cor-tint, #e7eef7); display: flex; align-items: center; justify-content: center;"><span style="{{ item.iconStyle }}"></span></span>
+            <h3 style="font-family: 'Libre Franklin', sans-serif; font-size: 19px; font-weight: 700; margin: 0;">{{ item.title }}</h3>
+            <p style="font-size: 14px; color: #4b5563; line-height: 1.55; margin: 0;">{{ item.desc }}</p>
+            <span style="margin-top: 4px; display: inline-flex; align-items: center; gap: 7px; color: var(--cor-primaria, #1d4e89); font-weight: 700; font-size: 14px;">Consultar<span style="{{ icArrow }}"></span></span>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section style="background: #fff;">
+    <div data-reveal="" style="opacity: 0; max-width: 820px; margin: 0 auto; padding: clamp(54px,8vw,96px) clamp(20px,5vw,44px);">
+      <div style="margin-bottom: 28px;">
+        <div style="font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--cor-primaria, #1d4e89); margin-bottom: 10px;">Ajuda</div>
+        <h2 style="font-family: 'Libre Franklin', sans-serif; font-weight: 800; font-size: clamp(27px,3.5vw,40px); letter-spacing: -0.01em; color: var(--cor-texto, #1b2733); margin: 0;">Perguntas frequentes</h2>
+      </div>
+      <div>
+        <sc-for list="{{ faqView }}" as="f" hint-placeholder-count="4">
+          <div style="border-bottom: 1px solid rgba(0,0,0,.1);">
+            <button onClick="{{ f.onClick }}" style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 4px; background: none; border: none; cursor: pointer; text-align: left; font-family: 'Libre Franklin', sans-serif; font-weight: 700; font-size: 17px; color: var(--cor-texto, #1b2733); min-height: 56px;">
+              <span>{{ f.question }}</span>
+              <span style="{{ f.chevronStyle }}"></span>
+            </button>
+            <div style="{{ f.answerStyle }}">
+              <p style="margin: 0; padding: 0 4px 20px; font-size: 15px; color: #4b5563; line-height: 1.65;">{{ f.answer }}</p>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== RODAPÉ ===== -->
+  <footer id="contactos" style="background: var(--cor-secundaria, #15395f); color: rgba(255,255,255,.78);">
+    <div style="max-width: 1240px; margin: 0 auto; padding: clamp(48px,6vw,76px) clamp(20px,5vw,44px) 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 40px;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+          <div style="width: 46px; height: 46px; border-radius: 14px; background: rgba(255,255,255,.1); display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 2px var(--cor-acento, #c79a3e);"><span style="font-family: 'Libre Franklin', sans-serif; font-weight: 800; color: #fff; font-size: 16px; letter-spacing: 1px;">VV</span></div>
+          <div style="font-family: 'Libre Franklin', sans-serif; font-weight: 700; font-size: 17px; color: #fff; line-height: 1.2;">Câmara Municipal<br>de Vale Verde</div>
+        </div>
+        <div style="font-size: 14px; line-height: 1.7;">
+          <div style="display: flex; gap: 8px; margin-bottom: 10px;"><span style="{{ icPinFoot }}"></span><span>Paços do Concelho<br>Praça do Município, 1<br>4900-000 Vale Verde</span></div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;"><span style="{{ icPhoneFoot }}"></span>+351 200 000 000</div>
+          <div style="display: flex; align-items: center; gap: 8px;"><span style="{{ icMailFoot }}"></span>geral@cm-valeverde.pt</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-family: 'Libre Franklin', sans-serif; font-weight: 700; color: #fff; font-size: 15px; margin-bottom: 16px;">Serviços</div>
+        <div style="display: flex; flex-direction: column; gap: 11px; font-size: 14px;">
+          <a href="#municipe" style="color: inherit; text-decoration: none;" style-hover="{{ footLinkHover }}">Balcão Virtual</a>
+          <a href="#municipe" style="color: inherit; text-decoration: none;" style-hover="{{ footLinkHover }}">Taxas e IMI</a>
+          <a href="#municipe" style="color: inherit; text-decoration: none;" style-hover="{{ footLinkHover }}">Licenciamento</a>
+          <a href="#municipe" style="color: inherit; text-decoration: none;" style-hover="{{ footLinkHover }}">Reclamações e Sugestões</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-family: 'Libre Franklin', sans-serif; font-weight: 700; color: #fff; font-size: 15px; margin-bottom: 16px;">O Município</div>
+        <div style="display: flex; flex-direction: column; gap: 11px; font-size: 14px;">
+          <a href="#noticias" style="color: inherit; text-decoration: none;" style-hover="{{ footLinkHover }}">Notícias</a>
+          <a href="#agenda" style="color: inherit; text-decoration: none;" style-hover="{{ footLinkHover }}">Agenda de Eventos</a>
+          <a href="#transparencia" style="color: inherit; text-decoration: none;" style-hover="{{ footLinkHover }}">Transparência</a>
+          <a href="#contactos" style="color: inherit; text-decoration: none;" style-hover="{{ footLinkHover }}">Contactos</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-family: 'Libre Franklin', sans-serif; font-weight: 700; color: #fff; font-size: 15px; margin-bottom: 16px;">Acompanhe-nos</div>
+        <div style="display: flex; gap: 10px; margin-bottom: 18px;">
+          <a href="#contactos" aria-label="Facebook" style="width: 42px; height: 42px; border-radius: 12px; border: 1px solid rgba(255,255,255,.25); display: flex; align-items: center; justify-content: center;" style-hover="{{ socialHover }}"><span style="{{ icFb }}"></span></a>
+          <a href="#contactos" aria-label="Instagram" style="width: 42px; height: 42px; border-radius: 12px; border: 1px solid rgba(255,255,255,.25); display: flex; align-items: center; justify-content: center;" style-hover="{{ socialHover }}"><span style="{{ icIg }}"></span></a>
+          <a href="#contactos" aria-label="YouTube" style="width: 42px; height: 42px; border-radius: 12px; border: 1px solid rgba(255,255,255,.25); display: flex; align-items: center; justify-content: center;" style-hover="{{ socialHover }}"><span style="{{ icYt }}"></span></a>
+          <a href="#contactos" aria-label="LinkedIn" style="width: 42px; height: 42px; border-radius: 12px; border: 1px solid rgba(255,255,255,.25); display: flex; align-items: center; justify-content: center;" style-hover="{{ socialHover }}"><span style="{{ icIn }}"></span></a>
+        </div>
+        <div style="display: inline-flex; align-items: center; gap: 9px; padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16); font-size: 12px; font-weight: 600; color: rgba(255,255,255,.9);"><span style="width: 26px; height: 20px; border-radius: 5px; background: var(--cor-acento, #c79a3e); color: #15395f; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px;">AA</span>Conforme WCAG 2.1</div>
+      </div>
+    </div>
+    <div style="border-top: 1px solid rgba(255,255,255,.14);">
+      <div style="max-width: 1240px; margin: 0 auto; padding: 18px clamp(20px,5vw,44px); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 20px; font-size: 12.5px; color: rgba(255,255,255,.6);">
+        <span>© 2026 Câmara Municipal de Vale Verde. Todos os direitos reservados.</span>
+        <div style="display: flex; gap: 18px; flex-wrap: wrap;">
+          <a href="#contactos" style="color: inherit; text-decoration: none;" style-hover="{{ footLinkHover }}">Declaração de Acessibilidade — WCAG 2.1 AA (DL n.º 83/2018)</a>
+          <a href="#contactos" style="color: inherit; text-decoration: none;" style-hover="{{ footLinkHover }}">Política de Privacidade</a>
+          <a href="#contactos" style="color: inherit; text-decoration: none;" style-hover="{{ footLinkHover }}">Mapa do Site</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:920},&quot;temaInicial&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Azul Institucional&quot;,&quot;Verde Concelho&quot;,&quot;Bordô&quot;,&quot;Terracota&quot;,&quot;Azul-Marinho&quot;],&quot;default&quot;:&quot;Verde Concelho&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;carrosselAutomatico&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;intervaloCarrossel&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:6,&quot;min&quot;:3,&quot;max&quot;:15,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  themes = [
+    { nome: 'Azul Institucional', primaria: '#1d4e89', secundaria: '#15395f', acento: '#c79a3e', texto: '#1b2733', fundoClaro: '#f4f7fb', fundoSuave: '#e9eff6', tint: '#e7eef7' },
+    { nome: 'Verde Concelho', primaria: '#2c6e49', secundaria: '#1d4d33', acento: '#bf8a2e', texto: '#1d2a23', fundoClaro: '#f3f8f4', fundoSuave: '#e6f0e9', tint: '#e6f1ea' },
+    { nome: 'Bordô', primaria: '#8a2433', secundaria: '#5f1923', acento: '#b78a3a', texto: '#2a1d20', fundoClaro: '#faf4f5', fundoSuave: '#f1e3e5', tint: '#f3e6e8' },
+    { nome: 'Terracota', primaria: '#b05231', secundaria: '#7d3a23', acento: '#4f6d5a', texto: '#2c211c', fundoClaro: '#fbf5f2', fundoSuave: '#f3e6df', tint: '#f5e8e1' },
+    { nome: 'Azul-Marinho', primaria: '#20324f', secundaria: '#141f33', acento: '#c2933f', texto: '#1a212e', fundoClaro: '#f4f6f9', fundoSuave: '#e7ecf3', tint: '#e8ecf3' }
+  ];
+
+  featured = [
+    { tag: 'Destaque', date: '18 jun 2026', imgLabel: 'praça central', icon: 'trees', title: 'Requalificação da Praça Central arranca em julho', excerpt: 'A intervenção vai criar mais zonas verdes, melhorar a acessibilidade e renovar o mobiliário urbano do centro histórico.' },
+    { tag: 'Aviso', date: '16 jun 2026', imgLabel: 'balcão virtual', icon: 'receipt-text', title: 'Período de pagamento do IMI já está a decorrer', excerpt: 'Os munícipes podem liquidar a primeira prestação no Balcão Virtual até ao final do mês, sem deslocações.' },
+    { tag: 'Cultura', date: '12 jun 2026', imgLabel: 'festas do concelho', icon: 'party-popper', title: 'Festas do Concelho regressam de 4 a 10 de agosto', excerpt: 'Uma semana de música, gastronomia e tradições para todas as idades, com entrada gratuita.' }
+  ];
+
+  quick = [
+    { icon: 'building-2', label: 'Balcão Virtual', desc: 'Serviços online 24 horas' },
+    { icon: 'file-text', label: 'Taxas e IMI', desc: 'Pagamentos e 2.ª via' },
+    { icon: 'hard-hat', label: 'Licenciamento', desc: 'Obras e urbanismo' },
+    { icon: 'message-square-warning', label: 'Reclamações', desc: 'Sugestões e ocorrências' },
+    { icon: 'calendar-days', label: 'Agenda Cultural', desc: 'Eventos do concelho' },
+    { icon: 'map', label: 'Mapa Interativo', desc: 'Conhecer o município' },
+    { icon: 'briefcase', label: 'Emprego e Concursos', desc: 'Oportunidades' },
+    { icon: 'heart-handshake', label: 'Apoios Sociais', desc: 'Programas de apoio' }
+  ];
+
+  news = [
+    { tag: 'Ambiente', date: '10 jun 2026', imgLabel: 'recolha de resíduos', icon: 'recycle', title: 'Recolha de resíduos passa a porta-a-porta em mais freguesias', excerpt: 'A medida pretende aumentar a taxa de reciclagem e reduzir os contentores na via pública.' },
+    { tag: 'Educação', date: '06 jun 2026', imgLabel: 'ateliês de verão', icon: 'graduation-cap', title: 'Abertas as inscrições para os ateliês de verão', excerpt: 'Atividades para crianças dos 6 aos 12 anos, com transporte e almoço incluídos.' },
+    { tag: 'Mobilidade', date: '03 jun 2026', imgLabel: 'transportes', icon: 'bus', title: 'Nova ligação de transporte público serve a zona industrial', excerpt: 'O reforço da rede facilita as deslocações entre casa e trabalho.' },
+    { tag: 'Obras', date: '29 mai 2026', imgLabel: 'rua do comércio', icon: 'construction', title: 'Concluída a repavimentação da Rua do Comércio', excerpt: 'Os trabalhos melhoram a segurança rodoviária e a circulação pedonal.' }
+  ];
+
+  events = [
+    { day: '28', month: 'JUN', title: 'Sessão Pública da Assembleia Municipal', place: 'Salão Nobre dos Paços do Concelho', time: '21h00' },
+    { day: '05', month: 'JUL', title: 'Feira de Produtos Locais', place: 'Praça do Município', time: '09h00 – 18h00' },
+    { day: '12', month: 'JUL', title: 'Caminhada Solidária pela Inclusão', place: 'Parque Verde do Rio', time: '09h30' },
+    { day: '04', month: 'AGO', title: 'Abertura das Festas do Concelho', place: 'Avenida da Liberdade', time: '21h30' }
+  ];
+
+  transparencia = [
+    { icon: 'vote', title: 'Orçamento Participativo', desc: 'Decida connosco a aplicação de parte do orçamento municipal.' },
+    { icon: 'file-check-2', title: 'Contratos Públicos', desc: 'Consulte os procedimentos e adjudicações da autarquia.' },
+    { icon: 'database', title: 'Portal de Dados Abertos', desc: 'Aceda livremente aos dados públicos do município.' }
+  ];
+
+  faqs = [
+    { question: 'Qual é o horário de atendimento da Câmara?', answer: 'Os serviços de atendimento estão abertos de segunda a sexta-feira, das 9h00 às 16h30. O Balcão Virtual está disponível 24 horas por dia, todos os dias.' },
+    { question: 'Como obtenho a 2.ª via de uma fatura da água?', answer: 'Aceda ao Balcão Virtual com a sua chave de munícipe, selecione "Água" e descarregue a 2.ª via em formato PDF, de forma imediata.' },
+    { question: 'Posso pagar o IMI online?', answer: 'Sim. Na área de Taxas e IMI pode consultar os valores em dívida e efetuar o pagamento por referência Multibanco ou MB WAY.' },
+    { question: 'Como marco um atendimento presencial?', answer: 'Utilize o serviço "Atendimento Online" no topo da página para agendar dia e hora, evitando tempos de espera ao balcão.' }
+  ];
+
+  navLinks = [
+    { label: 'Câmara', href: '#inicio' },
+    { label: 'Munícipe', href: '#municipe' },
+    { label: 'Visitar', href: '#agenda' },
+    { label: 'Notícias', href: '#noticias' },
+    { label: 'Transparência', href: '#transparencia' },
+    { label: 'Contactos', href: '#contactos' }
+  ];
+
+  constructor(props) {
+    super(props);
+    let ti = 0;
+    const t = (props && props.temaInicial);
+    if (t) { const i = this.themes.findIndex(x => x.nome === t); if (i >= 0) ti = i; }
+    this.state = { themeIndex: ti, slide: 0, menuOpen: false, openFaq: 0, vw: (typeof window !== 'undefined' ? window.innerWidth : 1280), lang: 'PT' };
+  }
+
+  iconStyle(name, color, size) {
+    const s = (size || 24) + 'px';
+    const url = 'url(https://unpkg.com/lucide-static@0.460.0/icons/' + name + '.svg)';
+    return { display: 'inline-block', width: s, height: s, backgroundColor: color || 'var(--cor-primaria)', WebkitMaskImage: url, maskImage: url, WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat', WebkitMaskPosition: 'center', maskPosition: 'center', WebkitMaskSize: 'contain', maskSize: 'contain', flexShrink: 0 };
+  }
+
+  _interval() { return (this.props && this.props.intervaloCarrossel ? this.props.intervaloCarrossel : 6) * 1000; }
+  _autoplay() { return !(this.props && this.props.carrosselAutomatico === false); }
+
+  _restart() {
+    clearInterval(this._timer);
+    if (this._autoplay()) {
+      this._timer = setInterval(() => this.setState(s => ({ slide: (s.slide + 1) % this.featured.length })), this._interval());
+    }
+  }
+  go(n) { const len = this.featured.length; this.setState({ slide: (n + len) % len }); this._restart(); }
+
+  componentDidMount() {
+    this._onResize = () => this.setState({ vw: window.innerWidth });
+    window.addEventListener('resize', this._onResize);
+    this._restart();
+    if (this.root && 'IntersectionObserver' in window) {
+      this._io = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.style.animation = 'fadeUp .7s cubic-bezier(.22,1,.36,1) forwards'; this._io.unobserve(e.target); } });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+      this.root.querySelectorAll('[data-reveal]').forEach(el => this._io.observe(el));
+    } else if (this.root) {
+      this.root.querySelectorAll('[data-reveal]').forEach(el => { el.style.opacity = 1; });
+    }
+    this._revealSafety = setTimeout(() => {
+      if (this.root) this.root.querySelectorAll('[data-reveal]').forEach(el => {
+        if (getComputedStyle(el).opacity === '0') el.style.animation = 'fadeUp .7s cubic-bezier(.22,1,.36,1) forwards';
+      });
+    }, 1200);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this._timer);
+    clearTimeout(this._revealSafety);
+    window.removeEventListener('resize', this._onResize);
+    if (this._io) this._io.disconnect();
+  }
+
+  renderVals() {
+    const t = this.themes[this.state.themeIndex] || this.themes[0];
+    const isMobile = this.state.vw < 880;
+    const setRoot = (el) => { this.root = el; };
+
+    const rootStyle = {
+      '--cor-primaria': t.primaria, '--cor-secundaria': t.secundaria, '--cor-acento': t.acento,
+      '--cor-texto': t.texto, '--fundo-claro': t.fundoClaro, '--fundo-suave': t.fundoSuave, '--cor-tint': t.tint,
+      background: 'var(--fundo-claro)', color: 'var(--cor-texto)', minHeight: '100vh',
+      fontFamily: "'Public Sans', system-ui, -apple-system, sans-serif"
+    };
+
+    const swatches = this.themes.map((th, i) => ({
+      nome: th.nome,
+      aria: 'Aplicar tema ' + th.nome,
+      onClick: () => this.setState({ themeIndex: i }),
+      style: {
+        width: '22px', height: '22px', borderRadius: '50%', background: th.primaria, cursor: 'pointer', padding: 0,
+        border: i === this.state.themeIndex ? '2px solid #fff' : '2px solid rgba(255,255,255,.3)',
+        boxShadow: i === this.state.themeIndex ? '0 0 0 2px var(--cor-acento)' : 'none',
+        transform: i === this.state.themeIndex ? 'scale(1.15)' : 'scale(1)',
+        transition: 'transform .2s ease, box-shadow .2s ease, border-color .2s ease'
+      }
+    }));
+
+    const featured = this.featured.map(f => ({ ...f, iconStyle: this.iconStyle(f.icon, 'var(--cor-primaria)', 28) }));
+    const quick = this.quick.map(q => ({ ...q, iconStyle: this.iconStyle(q.icon, 'var(--cor-primaria)', 26) }));
+    const news = this.news.map(n => ({ ...n, iconStyle: this.iconStyle(n.icon, 'var(--cor-primaria)', 24) }));
+    const transparencia = this.transparencia.map(tr => ({ ...tr, iconStyle: this.iconStyle(tr.icon, 'var(--cor-primaria)', 28) }));
+
+    const dots = this.featured.map((f, i) => ({
+      aria: 'Ir para o destaque ' + (i + 1),
+      onClick: () => this.go(i),
+      style: { width: i === this.state.slide ? '24px' : '8px', height: '8px', borderRadius: '4px', border: 'none', cursor: 'pointer', padding: 0, background: i === this.state.slide ? 'var(--cor-primaria)' : '#d1d5db', transition: 'width .3s ease, background .3s ease' }
+    }));
+
+    const faqView = this.faqs.map((f, i) => ({
+      question: f.question, answer: f.answer,
+      onClick: () => this.setState(s => ({ openFaq: s.openFaq === i ? null : i })),
+      chevronStyle: { ...this.iconStyle('chevron-down', 'var(--cor-primaria)', 22), transform: this.state.openFaq === i ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform .3s ease' },
+      answerStyle: { maxHeight: this.state.openFaq === i ? '260px' : '0px', opacity: this.state.openFaq === i ? 1 : 0, overflow: 'hidden', transition: 'max-height .35s ease, opacity .3s ease' }
+    }));
+
+    const mobileNav = this.navLinks.map(l => ({ ...l, onClick: () => this.setState({ menuOpen: false }) }));
+
+    return {
+      setRoot, rootStyle, swatches, featured, quick, news, events: this.events, transparencia, faqView,
+      navLinks: this.navLinks, mobileNav,
+      isMobile, desktopNav: !isMobile, showMobileMenu: isMobile && this.state.menuOpen,
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      slideOffset: this.state.slide * 33.3333,
+      next: () => this.go(this.state.slide + 1),
+      prev: () => this.go(this.state.slide - 1),
+      setPT: () => this.setState({ lang: 'PT' }),
+      setEN: () => this.setState({ lang: 'EN' }),
+      ptOpacity: this.state.lang === 'PT' ? 1 : 0.55,
+      enOpacity: this.state.lang === 'EN' ? 1 : 0.55,
+      navHover: { background: 'var(--cor-tint)', color: 'var(--cor-primaria)' },
+      btnHover: { background: 'var(--cor-secundaria)' },
+      heroBtnHover: { transform: 'translateY(-2px)' },
+      heroGhostHover: { background: 'rgba(255,255,255,.2)' },
+      cardHover: { transform: 'translateY(-4px)', borderColor: 'var(--cor-primaria)', boxShadow: '0 20px 40px -20px rgba(0,0,0,.28)' },
+      newsHover: { transform: 'translateY(-4px)', boxShadow: '0 24px 46px -22px rgba(0,0,0,.3)' },
+      eventHover: { background: 'var(--cor-tint)', borderColor: 'var(--cor-primaria)', transform: 'translateX(4px)' },
+      socialHover: { background: 'rgba(255,255,255,.14)', borderColor: 'rgba(255,255,255,.5)' },
+      footLinkHover: { color: '#ffffff' },
+      icPhone: this.iconStyle('phone', '#fff', 14),
+      icHead: this.iconStyle('headphones', '#fff', 14),
+      icGlobe: this.iconStyle('globe', '#fff', 14),
+      icMenu: this.iconStyle('menu', 'var(--cor-texto)', 26),
+      icChevL: this.iconStyle('chevron-left', 'var(--cor-primaria)', 22),
+      icChevR: this.iconStyle('chevron-right', 'var(--cor-primaria)', 22),
+      icArrow: this.iconStyle('arrow-right', 'var(--cor-primaria)', 16),
+      icArrowW: this.iconStyle('arrow-right', '#fff', 15),
+      icArrowSm: this.iconStyle('arrow-right', 'var(--cor-primaria)', 15),
+      icPin: this.iconStyle('map-pin', '#6b7280', 15),
+      icClock: this.iconStyle('clock', '#6b7280', 15),
+      icEventChev: this.iconStyle('chevron-right', 'var(--cor-primaria)', 20),
+      icPinFoot: this.iconStyle('map-pin', 'rgba(255,255,255,.7)', 16),
+      icPhoneFoot: this.iconStyle('phone', 'rgba(255,255,255,.7)', 15),
+      icMailFoot: this.iconStyle('mail', 'rgba(255,255,255,.7)', 15),
+      icFb: this.iconStyle('facebook', '#fff', 18),
+      icIg: this.iconStyle('instagram', '#fff', 18),
+      icYt: this.iconStyle('youtube', '#fff', 18),
+      icIn: this.iconStyle('linkedin', '#fff', 18)
+    };
+  }
+}
+</script>
+</body>
+</html>
