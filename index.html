@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portal do Munícipe — Demo</title>
+
+  <!-- ─── Fonts ─── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@500;600;700;800&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- ─── AOS (Animate On Scroll) ─── -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+
+  <!-- ─── Lucide icons (SVG via mask-image) ─── -->
+  <!-- loaded on demand in JS via iconStyle() -->
+
+  <style>
+    /* ══════════════════════════════════════
+       RESET & BASE
+    ══════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body, 'Public Sans', system-ui, sans-serif);
+      background: var(--bg-light);
+      color: var(--color-text);
+      min-height: 100vh;
+    }
+
+    /* ── CSS Variables (default theme: Azul Institucional) ── */
+    :root {
+      --color-primary:    #1d4e89;
+      --color-secondary:  #15395f;
+      --color-accent:     #c79a3e;
+      --color-text:       #1b2733;
+      --bg-light:         #f4f7fb;
+      --bg-soft:          #e9eff6;
+      --color-tint:       #e7eef7;
+      --font-heading:     'Libre Franklin', sans-serif;
+      --font-body:        'Public Sans', system-ui, sans-serif;
+      --radius-card:      18px;
+      --radius-btn:       11px;
+      --shadow-card:      0 20px 40px -20px rgba(0,0,0,.22);
+      --transition-base:  background .4s ease, color .3s ease, border-color .4s ease;
+    }
+
+    * { transition: var(--transition-base); }
+
+    /* ══════════════════════════════════════
+       ANIMATIONS
+    ══════════════════════════════════════ */
+    @keyframes fadeUp      { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:none; } }
+    @keyframes fadeIn      { from { opacity:0; } to { opacity:1; } }
+    @keyframes slideRight  { from { opacity:0; transform:translateX(-32px); } to { opacity:1; transform:none; } }
+    @keyframes heroEntrance{ from { opacity:0; transform:translateY(40px) scale(.97); } to { opacity:1; transform:none; } }
+    @keyframes pulse       { 0%,100% { transform:scale(1); } 50% { transform:scale(1.08); } }
+    @keyframes shimmer     { 0% { background-position:200% center; } 100% { background-position:-200% center; } }
+    @keyframes dotBounce   { 0%,80%,100% { transform:scale(0); } 40% { transform:scale(1); } }
+    @keyframes carouselIn  { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:none; } }
+
+    .hero-headline { animation: heroEntrance .9s cubic-bezier(.22,1,.36,1) .1s both; }
+    .hero-sub      { animation: heroEntrance .9s cubic-bezier(.22,1,.36,1) .25s both; }
+    .hero-ctas     { animation: heroEntrance .9s cubic-bezier(.22,1,.36,1) .4s both; }
+    .hero-badge    { animation: fadeIn .8s ease .05s both; }
+    .hero-card     { animation: heroEntrance 1s cubic-bezier(.22,1,.36,1) .3s both; }
+
+    /* ── Skip link ── */
+    .skip-link {
+      position: absolute; left:14px; top:-64px; z-index:400;
+      background: var(--color-primary); color:#fff;
+      padding:12px 18px; border-radius:0 0 10px 10px;
+      font-weight:700; text-decoration:none;
+      transition: top .2s ease;
+    }
+    .skip-link:focus { top:0; }
+
+    /* ── Focus ring ── */
+    *:focus-visible {
+      outline: 3px solid var(--color-accent);
+      outline-offset: 2px; border-radius:4px;
+    }
+
+    /* ══════════════════════════════════════
+       UTILITY BAR
+    ══════════════════════════════════════ */
+    .util-bar {
+      background: var(--color-secondary);
+      color: rgba(255,255,255,.82);
+      font-size:13px;
+    }
+    .util-bar__inner {
+      max-width:1240px; margin:0 auto;
+      padding:9px clamp(20px,5vw,44px);
+      display:flex; align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap; gap:10px 22px;
+    }
+    .util-bar a {
+      display:inline-flex; align-items:center; gap:7px;
+      color:inherit; text-decoration:none; font-weight:500;
+    }
+    .util-bar a:hover { color:#fff; }
+
+    .lang-btn {
+      background:none; border:none; color:inherit;
+      cursor:pointer; font-weight:700; font-size:13px;
+      padding:2px 6px; border-radius:4px;
+      opacity:.55; transition:opacity .2s;
+    }
+    .lang-btn.active { opacity:1; }
+    .lang-btn:hover  { opacity:1; }
+
+    .theme-pill {
+      display:flex; align-items:center; gap:10px;
+      padding:4px 10px 4px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.14);
+      font-size:12px; font-weight:600;
+    }
+    .theme-swatches { display:flex; gap:8px; align-items:center; }
+    .swatch {
+      width:22px; height:22px; border-radius:50%;
+      border:2px solid rgba(255,255,255,.3);
+      cursor:pointer; transition:transform .2s, box-shadow .2s, border-color .2s;
+    }
+    .swatch.active {
+      border-color:#fff;
+      box-shadow:0 0 0 2px var(--color-accent);
+      transform:scale(1.18);
+    }
+    .swatch:hover { transform:scale(1.12); }
+
+    /* ══════════════════════════════════════
+       HEADER
+    ══════════════════════════════════════ */
+    .site-header {
+      position:sticky; top:0; z-index:200;
+      background:rgba(255,255,255,.82);
+      backdrop-filter:saturate(160%) blur(14px);
+      -webkit-backdrop-filter:saturate(160%) blur(14px);
+      border-bottom:1px solid rgba(0,0,0,.07);
+    }
+    .header-inner {
+      max-width:1240px; margin:0 auto;
+      padding:0 clamp(20px,5vw,44px);
+      height:76px;
+      display:flex; align-items:center;
+      justify-content:space-between; gap:16px;
+    }
+    .logo-link {
+      display:flex; align-items:center; gap:13px;
+      text-decoration:none;
+    }
+    .logo-badge {
+      width:50px; height:50px; border-radius:16px;
+      background:var(--color-primary);
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:inset 0 0 0 2px var(--color-accent), 0 8px 20px -10px var(--color-primary);
+      flex-shrink:0;
+      font-family:var(--font-heading); font-weight:800;
+      color:#fff; font-size:17px; letter-spacing:1px;
+    }
+    .logo-text-top {
+      font-size:11px; letter-spacing:.13em;
+      text-transform:uppercase; color:#6b7280; font-weight:600;
+    }
+    .logo-text-name {
+      font-family:var(--font-heading); font-weight:700;
+      font-size:19px; color:var(--color-text); line-height:1.15;
+    }
+
+    .site-nav { display:flex; align-items:center; gap:2px; }
+    .nav-link {
+      color:var(--color-text); text-decoration:none;
+      font-weight:600; font-size:15px;
+      padding:9px 13px; border-radius:9px;
+    }
+    .nav-link:hover {
+      background:var(--color-tint);
+      color:var(--color-primary);
+    }
+    .nav-cta {
+      margin-left:10px;
+      background:var(--color-primary); color:#fff;
+      padding:11px 18px; border-radius:var(--radius-btn);
+      font-weight:700; font-size:14px; text-decoration:none;
+      min-height:44px; display:inline-flex; align-items:center; gap:8px;
+      box-shadow:0 10px 22px -12px var(--color-primary);
+    }
+    .nav-cta:hover { background:var(--color-secondary); transform:translateY(-1px); }
+
+    .menu-toggle {
+      width:48px; height:48px;
+      display:none; align-items:center; justify-content:center;
+      background:var(--color-tint); border:none;
+      border-radius:12px; cursor:pointer;
+    }
+    .mobile-nav {
+      display:none; border-top:1px solid rgba(0,0,0,.07);
+      background:#fff; padding:6px clamp(20px,5vw,44px) 16px;
+    }
+    .mobile-nav a {
+      display:flex; align-items:center;
+      min-height:50px; padding:4px 6px;
+      border-bottom:1px solid rgba(0,0,0,.06);
+      color:var(--color-text); text-decoration:none;
+      font-weight:600; font-size:16px;
+    }
+    .mobile-nav a:hover { color:var(--color-primary); }
+    .mobile-nav .mobile-cta {
+      margin-top:14px;
+      background:var(--color-primary); color:#fff;
+      border-radius:12px; font-weight:700; font-size:15px;
+      min-height:48px; display:flex; align-items:center;
+      justify-content:center; gap:8px;
+    }
+
+    @media (max-width:880px) {
+      .site-nav { display:none; }
+      .menu-toggle { display:flex; }
+      .mobile-nav.open { display:block; }
+    }
+
+    /* ══════════════════════════════════════
+       HERO
+    ══════════════════════════════════════ */
+    .hero {
+      position:relative; color:#fff; overflow:hidden;
+      background:
+        radial-gradient(900px 500px at 12% 8%, rgba(255,255,255,.16), transparent 60%),
+        radial-gradient(720px 620px at 94% 110%, var(--color-accent), transparent 55%),
+        radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+        linear-gradient(135deg, var(--color-secondary), var(--color-primary));
+      background-size: auto, auto, 24px 24px, auto;
+    }
+    .hero-inner {
+      max-width:1240px; margin:0 auto;
+      padding:clamp(52px,7vw,96px) clamp(20px,5vw,44px) clamp(60px,8vw,104px);
+      display:flex; gap:clamp(32px,5vw,64px);
+      flex-wrap:wrap; align-items:center;
+    }
+    .hero-content { flex:1 1 380px; min-width:290px; }
+    .hero-badge-el {
+      display:inline-flex; align-items:center; gap:9px;
+      font-size:13px; font-weight:600;
+      padding:7px 14px; border-radius:999px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.2);
+      margin-bottom:24px;
+    }
+    .hero-dot {
+      width:7px; height:7px; border-radius:50%;
+      background:var(--color-accent); display:inline-block;
+      animation:pulse 2.5s ease infinite;
+    }
+    .hero h1 {
+      font-family:var(--font-heading); font-weight:800;
+      font-size:clamp(36px,5.2vw,58px);
+      line-height:1.04; letter-spacing:-.02em;
+      margin-bottom:20px; text-wrap:balance;
+    }
+    .hero-sub {
+      font-size:clamp(16px,1.6vw,19px); line-height:1.6;
+      opacity:.92; max-width:520px; margin-bottom:32px;
+    }
+    .hero-ctas { display:flex; gap:13px; flex-wrap:wrap; }
+    .btn-primary {
+      background:#fff; color:var(--color-primary);
+      padding:15px 24px; border-radius:12px;
+      font-weight:700; font-size:15px; text-decoration:none;
+      min-height:48px; display:inline-flex; align-items:center; gap:9px;
+      box-shadow:0 16px 34px -14px rgba(0,0,0,.6);
+      transition:transform .2s, box-shadow .2s;
+    }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 20px 40px -14px rgba(0,0,0,.7); }
+    .btn-ghost {
+      background:rgba(255,255,255,.1); color:#fff;
+      padding:15px 24px; border-radius:12px;
+      font-weight:700; font-size:15px; text-decoration:none;
+      min-height:48px; display:inline-flex; align-items:center; gap:9px;
+      border:1px solid rgba(255,255,255,.55);
+      transition:background .2s;
+    }
+    .btn-ghost:hover { background:rgba(255,255,255,.2); }
+
+    /* ── Hero carousel card ── */
+    .hero-carousel-wrap { flex:1 1 430px; min-width:290px; }
+    .hero-card-el {
+      background:#fff; border-radius:22px; overflow:hidden;
+      box-shadow:0 40px 90px -30px rgba(0,0,0,.6);
+      color:var(--color-text);
+    }
+    .carousel-track-wrap { overflow:hidden; position:relative; }
+    .carousel-track {
+      display:flex; width:300%;
+      transition:transform .6s cubic-bezier(.4,0,.2,1);
+    }
+    .carousel-slide {
+      width:33.3333%; flex-shrink:0;
+    }
+    .carousel-img {
+      height:210px;
+      background:linear-gradient(135deg, var(--color-tint), var(--bg-soft));
+      position:relative; display:flex;
+      align-items:center; justify-content:center;
+    }
+    .carousel-icon-wrap {
+      width:56px; height:56px; border-radius:16px;
+      background:#fff; box-shadow:0 10px 24px -10px rgba(0,0,0,.3);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .carousel-tag {
+      position:absolute; top:13px; left:13px;
+      background:var(--color-primary); color:#fff;
+      padding:5px 11px; border-radius:8px;
+      font-size:12px; font-weight:700;
+    }
+    .carousel-body { padding:22px 24px 24px; }
+    .carousel-date { font-size:13px; color:#6b7280; font-weight:600; margin-bottom:8px; }
+    .carousel-title {
+      font-family:var(--font-heading); font-size:21px;
+      font-weight:700; line-height:1.25; margin-bottom:10px;
+    }
+    .carousel-excerpt {
+      font-size:15px; color:#4b5563; line-height:1.55; margin-bottom:16px;
+    }
+    .carousel-link {
+      display:inline-flex; align-items:center; gap:7px;
+      color:var(--color-primary); font-weight:700;
+      font-size:14px; text-decoration:none;
+    }
+    .carousel-btn {
+      position:absolute; top:105px; transform:translateY(-50%);
+      width:42px; height:42px; border-radius:50%; border:none;
+      background:rgba(255,255,255,.94); cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 4px 14px rgba(0,0,0,.22);
+      transition:background .2s, transform .2s;
+    }
+    .carousel-btn:hover { background:#fff; transform:translateY(-50%) scale(1.08); }
+    .carousel-btn--prev { left:12px; }
+    .carousel-btn--next { right:12px; }
+    .carousel-dots {
+      display:flex; gap:8px; justify-content:center;
+      padding:0 0 18px;
+    }
+    .carousel-dot {
+      height:8px; border-radius:4px; border:none;
+      cursor:pointer; padding:0; background:#d1d5db;
+      transition:width .3s ease, background .3s ease;
+    }
+    .carousel-dot.active {
+      background:var(--color-primary); width:24px;
+    }
+    .carousel-dot:not(.active) { width:8px; }
+
+    /* ══════════════════════════════════════
+       SECTION COMMONS
+    ══════════════════════════════════════ */
+    .section { padding:clamp(54px,8vw,96px) clamp(20px,5vw,44px); }
+    .section-inner { max-width:1240px; margin:0 auto; }
+    .section-label {
+      font-size:13px; font-weight:700; letter-spacing:.14em;
+      text-transform:uppercase; color:var(--color-primary);
+      margin-bottom:10px;
+    }
+    .section-title {
+      font-family:var(--font-heading); font-weight:800;
+      font-size:clamp(27px,3.5vw,40px); letter-spacing:-.01em;
+      color:var(--color-text); margin-bottom:10px; text-wrap:balance;
+    }
+    .section-desc { font-size:16px; color:#6b7280; max-width:600px; line-height:1.55; }
+    .section-header { margin-bottom:38px; }
+
+    /* ══════════════════════════════════════
+       QUICK ACCESS
+    ══════════════════════════════════════ */
+    .bg-white { background:#fff; }
+    .services-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(212px,1fr));
+      gap:18px;
+    }
+    .service-card {
+      display:flex; flex-direction:column; gap:14px;
+      padding:24px;
+      background:#fff; border:1px solid rgba(0,0,0,.08);
+      border-radius:var(--radius-card); text-decoration:none;
+      color:var(--color-text); min-height:136px;
+      transition:transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+    }
+    .service-card:hover {
+      transform:translateY(-4px);
+      border-color:var(--color-primary);
+      box-shadow:var(--shadow-card);
+    }
+    .service-icon {
+      width:52px; height:52px; border-radius:15px;
+      background:var(--color-tint);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .service-label {
+      font-family:var(--font-heading); font-weight:700;
+      font-size:16px; margin-bottom:4px;
+    }
+    .service-desc { font-size:13px; color:#6b7280; line-height:1.4; }
+
+    /* ══════════════════════════════════════
+       NEWS
+    ══════════════════════════════════════ */
+    .bg-soft { background:var(--bg-light); }
+    .section-header-row {
+      display:flex; align-items:flex-end;
+      justify-content:space-between; gap:16px;
+      flex-wrap:wrap; margin-bottom:34px;
+    }
+    .link-all {
+      display:inline-flex; align-items:center; gap:7px;
+      color:var(--color-primary); font-weight:700;
+      font-size:15px; text-decoration:none; min-height:44px;
+    }
+    .link-all:hover { opacity:.8; }
+    .news-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(260px,1fr));
+      gap:22px;
+    }
+    .news-card {
+      display:flex; flex-direction:column;
+      background:#fff; border:1px solid rgba(0,0,0,.07);
+      border-radius:20px; overflow:hidden;
+      text-decoration:none; color:var(--color-text);
+      transition:transform .22s ease, box-shadow .22s ease;
+    }
+    .news-card:hover {
+      transform:translateY(-4px);
+      box-shadow:0 24px 46px -22px rgba(0,0,0,.3);
+    }
+    .news-img {
+      height:172px;
+      background:linear-gradient(135deg, var(--color-tint), var(--bg-soft));
+      position:relative; display:flex;
+      align-items:center; justify-content:center;
+    }
+    .news-icon-wrap {
+      width:46px; height:46px; border-radius:13px;
+      background:#fff; box-shadow:0 8px 20px -10px rgba(0,0,0,.3);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .news-tag {
+      position:absolute; top:12px; left:12px;
+      background:var(--color-primary); color:#fff;
+      padding:5px 10px; border-radius:7px;
+      font-size:11px; font-weight:700;
+    }
+    .news-body {
+      padding:20px 22px 24px;
+      display:flex; flex-direction:column; flex:1;
+    }
+    .news-date { font-size:12px; color:#6b7280; font-weight:600; margin-bottom:8px; }
+    .news-title {
+      font-family:var(--font-heading); font-size:18px;
+      font-weight:700; line-height:1.3; margin-bottom:10px;
+    }
+    .news-excerpt { font-size:14px; color:#4b5563; line-height:1.5; margin-bottom:16px; }
+    .news-read {
+      margin-top:auto;
+      display:inline-flex; align-items:center; gap:6px;
+      color:var(--color-primary); font-weight:700; font-size:14px;
+    }
+
+    /* ══════════════════════════════════════
+       EVENTS
+    ══════════════════════════════════════ */
+    .events-list { display:flex; flex-direction:column; gap:12px; }
+    .event-card {
+      display:flex; align-items:center; gap:20px;
+      padding:16px 20px;
+      border:1px solid rgba(0,0,0,.08); border-radius:16px;
+      text-decoration:none; color:var(--color-text);
+      background:#fff;
+      transition:background .25s ease, transform .2s ease, border-color .25s ease;
+    }
+    .event-card:hover {
+      background:var(--color-tint);
+      border-color:var(--color-primary);
+      transform:translateX(4px);
+    }
+    .event-date-box {
+      flex-shrink:0; width:68px; text-align:center;
+      background:var(--color-primary); color:#fff;
+      border-radius:14px; padding:12px 6px;
+    }
+    .event-day {
+      font-family:var(--font-heading); font-size:24px;
+      font-weight:800; line-height:1;
+    }
+    .event-month {
+      font-size:11px; letter-spacing:.1em; opacity:.9; margin-top:3px;
+    }
+    .event-info { flex:1; min-width:0; }
+    .event-title {
+      font-family:var(--font-heading); font-size:17px;
+      font-weight:700; margin-bottom:6px;
+    }
+    .event-meta {
+      display:flex; gap:18px; flex-wrap:wrap;
+      font-size:13px; color:#6b7280;
+    }
+    .event-meta-item { display:inline-flex; align-items:center; gap:6px; }
+
+    /* ══════════════════════════════════════
+       TRANSPARENCY
+    ══════════════════════════════════════ */
+    .bg-soft2 { background:var(--bg-soft); }
+    .transparency-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(272px,1fr));
+      gap:22px;
+    }
+    .transp-card {
+      display:flex; flex-direction:column; gap:14px;
+      padding:28px; background:#fff;
+      border:1px solid rgba(0,0,0,.06);
+      border-radius:20px; text-decoration:none;
+      color:var(--color-text);
+      transition:transform .22s ease, box-shadow .22s ease;
+    }
+    .transp-card:hover {
+      transform:translateY(-4px);
+      box-shadow:var(--shadow-card);
+    }
+    .transp-icon {
+      width:56px; height:56px; border-radius:16px;
+      background:var(--color-tint);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .transp-title {
+      font-family:var(--font-heading); font-size:19px;
+      font-weight:700;
+    }
+    .transp-desc { font-size:14px; color:#4b5563; line-height:1.55; }
+    .transp-link {
+      margin-top:4px;
+      display:inline-flex; align-items:center; gap:7px;
+      color:var(--color-primary); font-weight:700; font-size:14px;
+    }
+
+    /* ══════════════════════════════════════
+       FAQ
+    ══════════════════════════════════════ */
+    .faq-wrap { max-width:820px; margin:0 auto; }
+    .faq-item { border-bottom:1px solid rgba(0,0,0,.1); }
+    .faq-btn {
+      width:100%; display:flex; align-items:center;
+      justify-content:space-between; gap:16px;
+      padding:20px 4px; background:none; border:none;
+      cursor:pointer; text-align:left;
+      font-family:var(--font-heading); font-weight:700;
+      font-size:17px; color:var(--color-text); min-height:56px;
+    }
+    .faq-btn:hover { color:var(--color-primary); }
+    .faq-chevron {
+      display:inline-block; flex-shrink:0;
+      transition:transform .3s ease;
+    }
+    .faq-chevron.open { transform:rotate(180deg); }
+    .faq-answer {
+      overflow:hidden; max-height:0; opacity:0;
+      transition:max-height .35s ease, opacity .3s ease;
+    }
+    .faq-answer.open { max-height:260px; opacity:1; }
+    .faq-answer p {
+      padding:0 4px 20px;
+      font-size:15px; color:#4b5563; line-height:1.65;
+    }
+
+    /* ══════════════════════════════════════
+       STATS BAR (bonus section)
+    ══════════════════════════════════════ */
+    .stats-bar {
+      background:var(--color-primary); color:#fff;
+      padding:clamp(32px,5vw,56px) clamp(20px,5vw,44px);
+    }
+    .stats-inner {
+      max-width:1240px; margin:0 auto;
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
+      gap:32px;
+    }
+    .stat-item { text-align:center; }
+    .stat-number {
+      font-family:var(--font-heading); font-weight:800;
+      font-size:clamp(36px,4vw,52px);
+      letter-spacing:-.02em; line-height:1;
+      margin-bottom:8px;
+      background:linear-gradient(90deg, #fff 0%, var(--color-accent) 50%, #fff 100%);
+      background-size:200% auto;
+      -webkit-background-clip:text;
+      background-clip:text;
+      -webkit-text-fill-color:transparent;
+      animation:shimmer 4s linear infinite;
+    }
+    .stat-label { font-size:15px; opacity:.82; font-weight:500; }
+
+    /* ══════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════ */
+    footer {
+      background:var(--color-secondary);
+      color:rgba(255,255,255,.78);
+    }
+    .footer-inner {
+      max-width:1240px; margin:0 auto;
+      padding:clamp(48px,6vw,76px) clamp(20px,5vw,44px) 40px;
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(210px,1fr));
+      gap:40px;
+    }
+    .footer-logo {
+      display:flex; align-items:center; gap:12px;
+      margin-bottom:18px;
+    }
+    .footer-logo-badge {
+      width:46px; height:46px; border-radius:14px;
+      background:rgba(255,255,255,.1);
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:inset 0 0 0 2px var(--color-accent);
+      font-family:var(--font-heading); font-weight:800;
+      color:#fff; font-size:16px; letter-spacing:1px;
+    }
+    .footer-logo-name {
+      font-family:var(--font-heading); font-weight:700;
+      font-size:17px; color:#fff; line-height:1.2;
+    }
+    .footer-contact { font-size:14px; line-height:1.7; }
+    .footer-contact-row { display:flex; gap:8px; margin-bottom:10px; }
+    .footer-col-title {
+      font-family:var(--font-heading); font-weight:700;
+      color:#fff; font-size:15px; margin-bottom:16px;
+    }
+    .footer-links { display:flex; flex-direction:column; gap:11px; font-size:14px; }
+    .footer-links a { color:inherit; text-decoration:none; }
+    .footer-links a:hover { color:#fff; }
+    .socials { display:flex; gap:10px; margin-bottom:18px; }
+    .social-btn {
+      width:42px; height:42px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.25);
+      display:flex; align-items:center; justify-content:center;
+      text-decoration:none;
+      transition:background .2s, border-color .2s;
+    }
+    .social-btn:hover {
+      background:rgba(255,255,255,.14);
+      border-color:rgba(255,255,255,.5);
+    }
+    .wcag-badge {
+      display:inline-flex; align-items:center; gap:9px;
+      padding:8px 14px; border-radius:999px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.16);
+      font-size:12px; font-weight:600;
+      color:rgba(255,255,255,.9);
+    }
+    .wcag-pill {
+      width:26px; height:20px; border-radius:5px;
+      background:var(--color-accent); color:var(--color-secondary);
+      display:inline-flex; align-items:center; justify-content:center;
+      font-weight:800; font-size:11px;
+    }
+    .footer-bottom {
+      border-top:1px solid rgba(255,255,255,.14);
+    }
+    .footer-bottom-inner {
+      max-width:1240px; margin:0 auto;
+      padding:18px clamp(20px,5vw,44px);
+      display:flex; align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap; gap:10px 20px;
+      font-size:12.5px; color:rgba(255,255,255,.6);
+    }
+    .footer-legal { display:flex; gap:18px; flex-wrap:wrap; }
+    .footer-legal a { color:inherit; text-decoration:none; }
+    .footer-legal a:hover { color:#fff; }
+
+    /* ══════════════════════════════════════
+       DEMO BANNER (GitHub Pages context)
+    ══════════════════════════════════════ */
+    .demo-banner {
+      background:linear-gradient(90deg, var(--color-accent), #e8b84b);
+      color:#1b1200; font-size:13px; font-weight:600;
+      text-align:center; padding:10px 20px;
+      letter-spacing:.02em;
+    }
+    .demo-banner a { color:inherit; font-weight:700; }
+
+    /* ── icon helper ── */
+    .ic {
+      display:inline-block; flex-shrink:0;
+      background-color:currentColor;
+      -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+      -webkit-mask-position:center; mask-position:center;
+      -webkit-mask-size:contain; mask-size:contain;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     DEMO BANNER
+═══════════════════════════════════════════════════════ -->
+<div class="demo-banner">
+  Demonstração · Template adaptável para qualquer município português
+  — <a href="https://github.com/" target="_blank">Ver no GitHub</a>
+</div>
+
+<a class="skip-link" href="#servicos">Saltar para o conteúdo principal</a>
+
+<!-- ═══════════════════════════════════════════════════════
+     UTILITY BAR
+═══════════════════════════════════════════════════════ -->
+<div class="util-bar">
+  <div class="util-bar__inner">
+    <div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap;">
+      <a href="tel:+351200000000">
+        <span class="ic" id="ic-phone-util" style="width:14px;height:14px;"></span>
+        +351 200 000 000
+      </a>
+      <a href="#servicos">
+        <span class="ic" id="ic-head-util" style="width:14px;height:14px;"></span>
+        Atendimento Online
+      </a>
+      <span style="display:inline-flex;align-items:center;gap:7px;opacity:.7;">
+        Seg–Sex · 9h00–16h30
+      </span>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <span style="display:inline-flex;align-items:center;gap:6px;opacity:.85;">
+        <span class="ic" id="ic-globe-util" style="width:14px;height:14px;color:rgba(255,255,255,.82);"></span>
+        <button class="lang-btn active" id="btn-pt">PT</button>
+        <span style="opacity:.4;">|</span>
+        <button class="lang-btn" id="btn-en">EN</button>
+      </span>
+      <div class="theme-pill">
+        <span>Tema</span>
+        <div class="theme-swatches" id="theme-swatches"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════════════════ -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="#inicio" class="logo-link" title="Página inicial">
+      <div class="logo-badge" id="logo-initials"></div>
+      <div style="line-height:1.15;">
+        <div class="logo-text-top">Câmara Municipal</div>
+        <div class="logo-text-name" id="logo-name"></div>
+      </div>
+    </a>
+
+    <nav class="site-nav" aria-label="Navegação principal">
+      <a class="nav-link" href="#inicio">Câmara</a>
+      <a class="nav-link" href="#servicos">Munícipe</a>
+      <a class="nav-link" href="#agenda">Agenda</a>
+      <a class="nav-link" href="#noticias">Notícias</a>
+      <a class="nav-link" href="#transparencia">Transparência</a>
+      <a class="nav-link" href="#contactos">Contactos</a>
+      <a class="nav-cta" href="#servicos">
+        Balcão Virtual
+        <span class="ic" id="ic-arrow-nav" style="width:15px;height:15px;color:#fff;"></span>
+      </a>
+    </nav>
+
+    <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
+      <span class="ic" id="ic-menu" style="width:26px;height:26px;color:var(--color-text);"></span>
+    </button>
+  </div>
+
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Menu mobile">
+    <a href="#inicio"         onclick="closeMenu()">Câmara</a>
+    <a href="#servicos"       onclick="closeMenu()">Munícipe</a>
+    <a href="#agenda"         onclick="closeMenu()">Agenda</a>
+    <a href="#noticias"       onclick="closeMenu()">Notícias</a>
+    <a href="#transparencia"  onclick="closeMenu()">Transparência</a>
+    <a href="#contactos"      onclick="closeMenu()">Contactos</a>
+    <a href="#servicos" class="mobile-cta" onclick="closeMenu()">Aceder ao Balcão Virtual</a>
+  </nav>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════════════════ -->
+<section id="inicio" class="hero">
+  <div class="hero-inner">
+
+    <div class="hero-content">
+      <div class="hero-badge hero-badge-el">
+        <span class="hero-dot"></span>
+        Portal do Munícipe · disponível 24h
+      </div>
+      <h1 class="hero-headline">
+        Tudo o que precisa da sua Câmara, num só lugar.
+      </h1>
+      <p class="hero-sub">
+        Serviços online, notícias e informação útil sobre o seu município — disponíveis a qualquer hora, em qualquer dispositivo.
+      </p>
+      <div class="hero-ctas">
+        <a href="#servicos" class="btn-primary">
+          Aceder ao Balcão Virtual
+          <span class="ic" id="ic-arrow-hero" style="width:16px;height:16px;color:var(--color-primary);"></span>
+        </a>
+        <a href="#servicos" class="btn-ghost">
+          Reportar uma ocorrência
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-carousel-wrap hero-card">
+      <div class="hero-card-el">
+        <div class="carousel-track-wrap">
+          <div class="carousel-track" id="carousel-track"></div>
+          <button class="carousel-btn carousel-btn--prev" id="carousel-prev" aria-label="Destaque anterior">
+            <span class="ic" id="ic-chev-l" style="width:22px;height:22px;color:var(--color-primary);"></span>
+          </button>
+          <button class="carousel-btn carousel-btn--next" id="carousel-next" aria-label="Destaque seguinte">
+            <span class="ic" id="ic-chev-r" style="width:22px;height:22px;color:var(--color-primary);"></span>
+          </button>
+        </div>
+        <div class="carousel-dots" id="carousel-dots"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     STATS
+═══════════════════════════════════════════════════════ -->
+<div class="stats-bar">
+  <div class="stats-inner" id="stats-inner"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     QUICK ACCESS / SERVICES
+═══════════════════════════════════════════════════════ -->
+<section id="servicos" class="section bg-white">
+  <div class="section-inner">
+    <div class="section-header" data-aos="fade-up">
+      <div class="section-label">Serviços</div>
+      <h2 class="section-title">Acesso rápido aos serviços</h2>
+      <p class="section-desc">Resolva sem sair de casa. Os serviços mais procurados pelos munícipes, a um clique de distância.</p>
+    </div>
+    <div class="services-grid" id="services-grid"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     NEWS
+═══════════════════════════════════════════════════════ -->
+<section id="noticias" class="section bg-soft">
+  <div class="section-inner">
+    <div class="section-header-row" data-aos="fade-up">
+      <div>
+        <div class="section-label">Atualidade</div>
+        <h2 class="section-title" style="margin-bottom:0;">Últimas notícias</h2>
+      </div>
+      <a href="#noticias" class="link-all">
+        Ver todas as notícias
+        <span class="ic" id="ic-arrow-news" style="width:15px;height:15px;color:var(--color-primary);"></span>
+      </a>
+    </div>
+    <div class="news-grid" id="news-grid"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     EVENTS
+═══════════════════════════════════════════════════════ -->
+<section id="agenda" class="section bg-white">
+  <div class="section-inner">
+    <div class="section-header" data-aos="fade-up">
+      <div class="section-label">Agenda</div>
+      <h2 class="section-title">Próximos eventos</h2>
+    </div>
+    <div class="events-list" id="events-list"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     TRANSPARENCY
+═══════════════════════════════════════════════════════ -->
+<section id="transparencia" class="section bg-soft2">
+  <div class="section-inner">
+    <div style="max-width:640px;" class="section-header" data-aos="fade-up">
+      <div class="section-label">Transparência e Dados Abertos</div>
+      <h2 class="section-title">Uma autarquia aberta aos cidadãos</h2>
+      <p class="section-desc" style="color:#4b5563;">
+        Disponibilizamos de forma clara e acessível a informação sobre as decisões, contas e contratos do município.
+      </p>
+    </div>
+    <div class="transparency-grid" id="transparency-grid"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     FAQ
+═══════════════════════════════════════════════════════ -->
+<section class="section bg-white">
+  <div class="section-inner faq-wrap">
+    <div class="section-header" data-aos="fade-up">
+      <div class="section-label">Ajuda</div>
+      <h2 class="section-title">Perguntas frequentes</h2>
+    </div>
+    <div id="faq-list"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════════════════ -->
+<footer id="contactos">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">
+        <div class="footer-logo-badge" id="footer-initials"></div>
+        <div class="footer-logo-name" id="footer-name"></div>
+      </div>
+      <div class="footer-contact">
+        <div class="footer-contact-row">
+          <span class="ic" id="ic-pin-foot" style="width:16px;height:16px;margin-top:2px;color:rgba(255,255,255,.7);flex-shrink:0;"></span>
+          <span id="footer-address"></span>
+        </div>
+        <div class="footer-contact-row">
+          <span class="ic" id="ic-phone-foot" style="width:15px;height:15px;color:rgba(255,255,255,.7);flex-shrink:0;"></span>
+          <span id="footer-phone"></span>
+        </div>
+        <div class="footer-contact-row">
+          <span class="ic" id="ic-mail-foot" style="width:15px;height:15px;color:rgba(255,255,255,.7);flex-shrink:0;"></span>
+          <span id="footer-email"></span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Serviços</div>
+      <div class="footer-links">
+        <a href="#servicos">Balcão Virtual</a>
+        <a href="#servicos">Taxas e IMI</a>
+        <a href="#servicos">Licenciamento</a>
+        <a href="#servicos">Reclamações e Sugestões</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">O Município</div>
+      <div class="footer-links">
+        <a href="#noticias">Notícias</a>
+        <a href="#agenda">Agenda de Eventos</a>
+        <a href="#transparencia">Transparência</a>
+        <a href="#contactos">Contactos</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Acompanhe-nos</div>
+      <div class="socials">
+        <a class="social-btn" href="#contactos" aria-label="Facebook">
+          <span class="ic" id="ic-fb" style="width:18px;height:18px;color:#fff;"></span>
+        </a>
+        <a class="social-btn" href="#contactos" aria-label="Instagram">
+          <span class="ic" id="ic-ig" style="width:18px;height:18px;color:#fff;"></span>
+        </a>
+        <a class="social-btn" href="#contactos" aria-label="YouTube">
+          <span class="ic" id="ic-yt" style="width:18px;height:18px;color:#fff;"></span>
+        </a>
+        <a class="social-btn" href="#contactos" aria-label="LinkedIn">
+          <span class="ic" id="ic-in" style="width:18px;height:18px;color:#fff;"></span>
+        </a>
+      </div>
+      <div class="wcag-badge">
+        <span class="wcag-pill">AA</span>
+        Conforme WCAG 2.1
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-bottom-inner">
+      <span id="footer-copy"></span>
+      <div class="footer-legal">
+        <a href="#contactos">Declaração de Acessibilidade</a>
+        <a href="#contactos">Política de Privacidade</a>
+        <a href="#contactos">Mapa do Site</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════
+     AOS — Animate On Scroll
+     https://michalsnik.github.io/aos/
+     Configurar via data-aos="fade-up|fade-right|zoom-in|flip-left|..."
+     data-aos-delay="200" data-aos-duration="800"
+═══════════════════════════════════════════════════════ -->
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   ██████  CONFIG — editar aqui para adaptar a qualquer câmara
+   ═══════════════════════════════════════════════════════ */
+const CONFIG = {
+  municipio:   "Vale Verde",        // Nome do município
+  sigla:       "VV",                // Sigla (aparece no logo)
+  temaInicial: 0,                   // 0=Azul Institucional … 4=Azul-Marinho
+  autoplay:    true,                // Carrossel automático
+  intervalo:   6000,                // ms entre slides
+
+  contacto: {
+    morada:    "Praça do Município, 1\n4900-000 Vale Verde",
+    telefone:  "+351 200 000 000",
+    email:     "geral@cm-valeverde.pt",
+    copyright: "© 2026 Câmara Municipal de Vale Verde. Todos os direitos reservados."
+  },
+
+  temas: [
+    { nome:"Azul Institucional", primaria:"#1d4e89", secundaria:"#15395f", acento:"#c79a3e", texto:"#1b2733", bgLight:"#f4f7fb", bgSoft:"#e9eff6", tint:"#e7eef7" },
+    { nome:"Verde Concelho",     primaria:"#2c6e49", secundaria:"#1d4d33", acento:"#bf8a2e", texto:"#1d2a23", bgLight:"#f3f8f4", bgSoft:"#e6f0e9", tint:"#e6f1ea" },
+    { nome:"Bordô",              primaria:"#8a2433", secundaria:"#5f1923", acento:"#b78a3a", texto:"#2a1d20", bgLight:"#faf4f5", bgSoft:"#f1e3e5", tint:"#f3e6e8" },
+    { nome:"Terracota",          primaria:"#b05231", secundaria:"#7d3a23", acento:"#4f6d5a", texto:"#2c211c", bgLight:"#fbf5f2", bgSoft:"#f3e6df", tint:"#f5e8e1" },
+    { nome:"Azul-Marinho",       primaria:"#20324f", secundaria:"#141f33", acento:"#c2933f", texto:"#1a212e", bgLight:"#f4f6f9", bgSoft:"#e7ecf3", tint:"#e8ecf3" }
+  ],
+
+  stats: [
+    { numero:"47 000", label:"Munícipes" },
+    { numero:"98%",    label:"Serviços online" },
+    { numero:"24h",    label:"Balcão Virtual" },
+    { numero:"12",     label:"Freguesias" }
+  ],
+
+  destaques: [
+    { tag:"Destaque",  data:"18 jun 2026", icon:"trees",        titulo:"Requalificação da Praça Central arranca em julho",         excerto:"A intervenção vai criar mais zonas verdes, melhorar a acessibilidade e renovar o mobiliário urbano do centro histórico." },
+    { tag:"Aviso",     data:"16 jun 2026", icon:"receipt-text", titulo:"Período de pagamento do IMI já está a decorrer",            excerto:"Os munícipes podem liquidar a primeira prestação no Balcão Virtual até ao final do mês, sem deslocações." },
+    { tag:"Cultura",   data:"12 jun 2026", icon:"party-popper", titulo:"Festas do Concelho regressam de 4 a 10 de agosto",          excerto:"Uma semana de música, gastronomia e tradições para todas as idades, com entrada gratuita." }
+  ],
+
+  servicos: [
+    { icon:"building-2",           label:"Balcão Virtual",      desc:"Serviços online 24 horas" },
+    { icon:"file-text",            label:"Taxas e IMI",         desc:"Pagamentos e 2.ª via" },
+    { icon:"hard-hat",             label:"Licenciamento",       desc:"Obras e urbanismo" },
+    { icon:"message-square-warning",label:"Reclamações",        desc:"Sugestões e ocorrências" },
+    { icon:"calendar-days",        label:"Agenda Cultural",     desc:"Eventos do concelho" },
+    { icon:"map",                  label:"Mapa Interativo",     desc:"Conhecer o município" },
+    { icon:"briefcase",            label:"Emprego",             desc:"Concursos e oportunidades" },
+    { icon:"heart-handshake",      label:"Apoios Sociais",      desc:"Programas de apoio" }
+  ],
+
+  noticias: [
+    { tag:"Ambiente",   data:"10 jun 2026", icon:"recycle",         titulo:"Recolha de resíduos porta-a-porta em mais freguesias",    excerto:"A medida pretende aumentar a taxa de reciclagem e reduzir os contentores na via pública." },
+    { tag:"Educação",   data:"06 jun 2026", icon:"graduation-cap",  titulo:"Abertas as inscrições para os ateliês de verão",          excerto:"Atividades para crianças dos 6 aos 12 anos, com transporte e almoço incluídos." },
+    { tag:"Mobilidade", data:"03 jun 2026", icon:"bus",             titulo:"Nova ligação de transporte serve a zona industrial",       excerto:"O reforço da rede facilita as deslocações entre casa e trabalho." },
+    { tag:"Obras",      data:"29 mai 2026", icon:"construction",    titulo:"Concluída a repavimentação da Rua do Comércio",           excerto:"Os trabalhos melhoram a segurança rodoviária e a circulação pedonal." }
+  ],
+
+  eventos: [
+    { dia:"28", mes:"JUN", titulo:"Sessão Pública da Assembleia Municipal", local:"Salão Nobre dos Paços do Concelho", hora:"21h00" },
+    { dia:"05", mes:"JUL", titulo:"Feira de Produtos Locais",               local:"Praça do Município",               hora:"09h00 – 18h00" },
+    { dia:"12", mes:"JUL", titulo:"Caminhada Solidária pela Inclusão",      local:"Parque Verde do Rio",              hora:"09h30" },
+    { dia:"04", mes:"AGO", titulo:"Abertura das Festas do Concelho",        local:"Avenida da Liberdade",             hora:"21h30" }
+  ],
+
+  transparencia: [
+    { icon:"vote",         titulo:"Orçamento Participativo", desc:"Decida connosco a aplicação de parte do orçamento municipal." },
+    { icon:"file-check-2", titulo:"Contratos Públicos",     desc:"Consulte os procedimentos e adjudicações da autarquia." },
+    { icon:"database",     titulo:"Dados Abertos",          desc:"Aceda livremente aos dados públicos do município." }
+  ],
+
+  faqs: [
+    { pergunta:"Qual é o horário de atendimento da Câmara?",       resposta:"Os serviços estão abertos de segunda a sexta-feira, das 9h00 às 16h30. O Balcão Virtual está disponível 24 horas por dia." },
+    { pergunta:"Como obtenho a 2.ª via de uma fatura da água?",    resposta:"Aceda ao Balcão Virtual com a sua chave de munícipe, selecione 'Água' e descarregue a 2.ª via em PDF, de imediato." },
+    { pergunta:"Posso pagar o IMI online?",                        resposta:"Sim. Na área de Taxas e IMI pode consultar os valores em dívida e efetuar o pagamento por referência Multibanco ou MB WAY." },
+    { pergunta:"Como marco um atendimento presencial?",             resposta:"Utilize o serviço 'Atendimento Online' no topo da página para agendar dia e hora, evitando tempos de espera ao balcão." }
+  ]
+};
+
+/* ═══════════════════════════════════════════════════════
+   ICON HELPER — Lucide via CDN mask-image
+═══════════════════════════════════════════════════════ */
+const ICON_BASE = 'https://unpkg.com/lucide-static@0.460.0/icons/';
+
+function setIcon(el, name, color, sizePx) {
+  if (!el) return;
+  const url = `url(${ICON_BASE}${name}.svg)`;
+  el.style.webkitMaskImage = url;
+  el.style.maskImage = url;
+  if (color) el.style.backgroundColor = color;
+  if (sizePx) { el.style.width = sizePx + 'px'; el.style.height = sizePx + 'px'; }
+}
+
+function iconEl(name, color, sizePx) {
+  const s = document.createElement('span');
+  s.className = 'ic';
+  s.style.cssText = `display:inline-block;flex-shrink:0;width:${sizePx||20}px;height:${sizePx||20}px;`;
+  setIcon(s, name, color || 'var(--color-primary)');
+  return s;
+}
+
+/* ═══════════════════════════════════════════════════════
+   THEME ENGINE
+═══════════════════════════════════════════════════════ */
+let currentTheme = CONFIG.temaInicial;
+
+function applyTheme(idx) {
+  currentTheme = idx;
+  const t = CONFIG.temas[idx];
+  const r = document.documentElement.style;
+  r.setProperty('--color-primary',   t.primaria);
+  r.setProperty('--color-secondary', t.secundaria);
+  r.setProperty('--color-accent',    t.acento);
+  r.setProperty('--color-text',      t.texto);
+  r.setProperty('--bg-light',        t.bgLight);
+  r.setProperty('--bg-soft',         t.bgSoft);
+  r.setProperty('--color-tint',      t.tint);
+  document.querySelectorAll('.swatch').forEach((s, i) => {
+    s.classList.toggle('active', i === idx);
+  });
+}
+
+function buildSwatches() {
+  const wrap = document.getElementById('theme-swatches');
+  CONFIG.temas.forEach((t, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'swatch' + (i === currentTheme ? ' active' : '');
+    btn.style.background = t.primaria;
+    btn.title = t.nome;
+    btn.setAttribute('aria-label', 'Aplicar tema ' + t.nome);
+    btn.addEventListener('click', () => applyTheme(i));
+    wrap.appendChild(btn);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   BRANDING
+═══════════════════════════════════════════════════════ */
+function buildBranding() {
+  document.getElementById('logo-initials').textContent = CONFIG.sigla;
+  document.getElementById('logo-name').textContent = CONFIG.municipio;
+  document.getElementById('footer-initials').textContent = CONFIG.sigla;
+  document.getElementById('footer-name').innerHTML =
+    'Câmara Municipal<br>de ' + CONFIG.municipio;
+  document.getElementById('footer-address').innerHTML =
+    CONFIG.contacto.morada.replace('\n', '<br>');
+  document.getElementById('footer-phone').textContent  = CONFIG.contacto.telefone;
+  document.getElementById('footer-email').textContent  = CONFIG.contacto.email;
+  document.getElementById('footer-copy').textContent   = CONFIG.contacto.copyright;
+  document.title = 'Portal do Munícipe · ' + CONFIG.municipio;
+}
+
+/* ═══════════════════════════════════════════════════════
+   STATS
+═══════════════════════════════════════════════════════ */
+function buildStats() {
+  const wrap = document.getElementById('stats-inner');
+  CONFIG.stats.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'stat-item';
+    div.setAttribute('data-aos', 'fade-up');
+    div.setAttribute('data-aos-delay', i * 100);
+    div.innerHTML = `<div class="stat-number">${s.numero}</div><div class="stat-label">${s.label}</div>`;
+    wrap.appendChild(div);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   CAROUSEL
+═══════════════════════════════════════════════════════ */
+let slide = 0, carouselTimer = null;
+
+function buildCarousel() {
+  const track = document.getElementById('carousel-track');
+  const dotsWrap = document.getElementById('carousel-dots');
+  track.style.width = (CONFIG.destaques.length * 100) + '%';
+
+  CONFIG.destaques.forEach((d, i) => {
+    const slideEl = document.createElement('div');
+    slideEl.className = 'carousel-slide';
+    slideEl.style.width = (100 / CONFIG.destaques.length) + '%';
+    slideEl.innerHTML = `
+      <div class="carousel-img">
+        <div class="carousel-icon-wrap" data-icon="${d.icon}"></div>
+        <span class="carousel-tag">${d.tag}</span>
+      </div>
+      <div class="carousel-body">
+        <div class="carousel-date">${d.data}</div>
+        <h3 class="carousel-title">${d.titulo}</h3>
+        <p class="carousel-excerpt">${d.excerto}</p>
+        <a href="#noticias" class="carousel-link">
+          Ler notícia
+          <span class="ic carousel-arrow" style="width:14px;height:14px;color:var(--color-primary);"></span>
+        </a>
+      </div>`;
+    track.appendChild(slideEl);
+    // inject icon
+    setTimeout(() => {
+      const iw = slideEl.querySelector('.carousel-icon-wrap');
+      iw.appendChild(iconEl(d.icon, 'var(--color-primary)', 28));
+      slideEl.querySelector('.carousel-arrow') &&
+        setIcon(slideEl.querySelector('.carousel-arrow'), 'arrow-right', 'var(--color-primary)');
+    }, 0);
+
+    const dot = document.createElement('button');
+    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Ir para o destaque ' + (i+1));
+    dot.addEventListener('click', () => goSlide(i));
+    dotsWrap.appendChild(dot);
+  });
+
+  document.getElementById('carousel-prev').addEventListener('click', () =>
+    goSlide((slide - 1 + CONFIG.destaques.length) % CONFIG.destaques.length));
+  document.getElementById('carousel-next').addEventListener('click', () =>
+    goSlide((slide + 1) % CONFIG.destaques.length));
+
+  if (CONFIG.autoplay) startAutoplay();
+}
+
+function goSlide(n) {
+  slide = n;
+  const pct = (100 / CONFIG.destaques.length) * n;
+  document.getElementById('carousel-track').style.transform = `translateX(-${pct}%)`;
+  document.querySelectorAll('.carousel-dot').forEach((d, i) =>
+    d.classList.toggle('active', i === n));
+  if (CONFIG.autoplay) startAutoplay();
+}
+
+function startAutoplay() {
+  clearInterval(carouselTimer);
+  carouselTimer = setInterval(() =>
+    goSlide((slide + 1) % CONFIG.destaques.length), CONFIG.intervalo);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SERVICES GRID
+═══════════════════════════════════════════════════════ */
+function buildServices() {
+  const grid = document.getElementById('services-grid');
+  CONFIG.servicos.forEach((s, i) => {
+    const a = document.createElement('a');
+    a.href = '#servicos';
+    a.className = 'service-card';
+    a.setAttribute('data-aos', 'fade-up');
+    a.setAttribute('data-aos-delay', (i % 4) * 80);
+    a.innerHTML = `
+      <div class="service-icon" data-icon="${s.icon}"></div>
+      <div>
+        <div class="service-label">${s.label}</div>
+        <div class="service-desc">${s.desc}</div>
+      </div>`;
+    grid.appendChild(a);
+    setTimeout(() => {
+      a.querySelector('.service-icon').appendChild(iconEl(s.icon, 'var(--color-primary)', 26));
+    }, 0);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   NEWS GRID
+═══════════════════════════════════════════════════════ */
+function buildNews() {
+  const grid = document.getElementById('news-grid');
+  CONFIG.noticias.forEach((n, i) => {
+    const a = document.createElement('a');
+    a.href = '#noticias';
+    a.className = 'news-card';
+    a.setAttribute('data-aos', 'fade-up');
+    a.setAttribute('data-aos-delay', (i % 4) * 80);
+    a.innerHTML = `
+      <div class="news-img">
+        <div class="news-icon-wrap" data-icon="${n.icon}"></div>
+        <span class="news-tag">${n.tag}</span>
+      </div>
+      <div class="news-body">
+        <div class="news-date">${n.data}</div>
+        <h3 class="news-title">${n.titulo}</h3>
+        <p class="news-excerpt">${n.excerto}</p>
+        <span class="news-read">
+          Ler mais
+          <span class="ic" style="width:14px;height:14px;color:var(--color-primary);"></span>
+        </span>
+      </div>`;
+    grid.appendChild(a);
+    setTimeout(() => {
+      a.querySelector('.news-icon-wrap').appendChild(iconEl(n.icon, 'var(--color-primary)', 24));
+      const arr = a.querySelector('.news-read .ic');
+      if (arr) setIcon(arr, 'arrow-right', 'var(--color-primary)');
+    }, 0);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   EVENTS LIST
+═══════════════════════════════════════════════════════ */
+function buildEvents() {
+  const list = document.getElementById('events-list');
+  CONFIG.eventos.forEach((ev, i) => {
+    const a = document.createElement('a');
+    a.href = '#agenda';
+    a.className = 'event-card';
+    a.setAttribute('data-aos', 'fade-up');
+    a.setAttribute('data-aos-delay', i * 60);
+    a.innerHTML = `
+      <div class="event-date-box">
+        <div class="event-day">${ev.dia}</div>
+        <div class="event-month">${ev.mes}</div>
+      </div>
+      <div class="event-info">
+        <div class="event-title">${ev.titulo}</div>
+        <div class="event-meta">
+          <span class="event-meta-item"><span class="ic ev-pin" style="width:15px;height:15px;color:#6b7280;"></span>${ev.local}</span>
+          <span class="event-meta-item"><span class="ic ev-clock" style="width:15px;height:15px;color:#6b7280;"></span>${ev.hora}</span>
+        </div>
+      </div>
+      <span class="ic ev-chev" style="width:20px;height:20px;color:var(--color-primary);flex-shrink:0;"></span>`;
+    list.appendChild(a);
+    setTimeout(() => {
+      setIcon(a.querySelector('.ev-pin'),   'map-pin',       '#6b7280');
+      setIcon(a.querySelector('.ev-clock'), 'clock',         '#6b7280');
+      setIcon(a.querySelector('.ev-chev'),  'chevron-right', 'var(--color-primary)');
+    }, 0);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   TRANSPARENCY
+═══════════════════════════════════════════════════════ */
+function buildTransparency() {
+  const grid = document.getElementById('transparency-grid');
+  CONFIG.transparencia.forEach((tr, i) => {
+    const a = document.createElement('a');
+    a.href = '#transparencia';
+    a.className = 'transp-card';
+    a.setAttribute('data-aos', 'fade-up');
+    a.setAttribute('data-aos-delay', i * 100);
+    a.innerHTML = `
+      <div class="transp-icon" data-icon="${tr.icon}"></div>
+      <div class="transp-title">${tr.titulo}</div>
+      <p class="transp-desc">${tr.desc}</p>
+      <span class="transp-link">
+        Consultar
+        <span class="ic tr-arr" style="width:14px;height:14px;color:var(--color-primary);"></span>
+      </span>`;
+    grid.appendChild(a);
+    setTimeout(() => {
+      a.querySelector('.transp-icon').appendChild(iconEl(tr.icon, 'var(--color-primary)', 28));
+      setIcon(a.querySelector('.tr-arr'), 'arrow-right', 'var(--color-primary)');
+    }, 0);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   FAQ ACCORDION
+═══════════════════════════════════════════════════════ */
+function buildFAQ() {
+  const list = document.getElementById('faq-list');
+  CONFIG.faqs.forEach((f, i) => {
+    const div = document.createElement('div');
+    div.className = 'faq-item';
+    div.setAttribute('data-aos', 'fade-up');
+    div.setAttribute('data-aos-delay', i * 60);
+    const answerId = 'faq-ans-' + i;
+    div.innerHTML = `
+      <button class="faq-btn" aria-expanded="false" aria-controls="${answerId}">
+        <span>${f.pergunta}</span>
+        <span class="ic faq-chevron" style="width:22px;height:22px;color:var(--color-primary);"></span>
+      </button>
+      <div class="faq-answer" id="${answerId}" role="region">
+        <p>${f.resposta}</p>
+      </div>`;
+    list.appendChild(div);
+    const btn = div.querySelector('.faq-btn');
+    const answer = div.querySelector('.faq-answer');
+    const chev = div.querySelector('.faq-chevron');
+    setIcon(chev, 'chevron-down', 'var(--color-primary)');
+    btn.addEventListener('click', () => {
+      const open = answer.classList.toggle('open');
+      chev.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', open);
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   STATIC ICONS
+═══════════════════════════════════════════════════════ */
+function buildStaticIcons() {
+  const map = {
+    'ic-phone-util': 'phone',    'ic-head-util':   'headphones',
+    'ic-globe-util': 'globe',    'ic-menu':         'menu',
+    'ic-arrow-nav':  'arrow-right', 'ic-arrow-hero': 'arrow-right',
+    'ic-arrow-news': 'arrow-right',
+    'ic-chev-l':     'chevron-left', 'ic-chev-r': 'chevron-right',
+    'ic-pin-foot':   'map-pin',   'ic-phone-foot':  'phone',
+    'ic-mail-foot':  'mail',
+    'ic-fb':         'facebook',  'ic-ig': 'instagram',
+    'ic-yt':         'youtube',   'ic-in': 'linkedin'
+  };
+  for (const [id, name] of Object.entries(map)) {
+    const el = document.getElementById(id);
+    if (el) setIcon(el, name);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE MENU
+═══════════════════════════════════════════════════════ */
+function closeMenu() {
+  document.getElementById('mobile-nav').classList.remove('open');
+}
+document.getElementById('menu-toggle').addEventListener('click', () => {
+  document.getElementById('mobile-nav').classList.toggle('open');
+});
+
+/* ═══════════════════════════════════════════════════════
+   LANGUAGE TOGGLE (cosmético — demo)
+═══════════════════════════════════════════════════════ */
+document.getElementById('btn-pt').addEventListener('click', function() {
+  this.classList.add('active');
+  document.getElementById('btn-en').classList.remove('active');
+});
+document.getElementById('btn-en').addEventListener('click', function() {
+  this.classList.add('active');
+  document.getElementById('btn-pt').classList.remove('active');
+});
+
+/* ═══════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  applyTheme(CONFIG.temaInicial);
+  buildBranding();
+  buildSwatches();
+  buildStats();
+  buildCarousel();
+  buildServices();
+  buildNews();
+  buildEvents();
+  buildTransparency();
+  buildFAQ();
+  buildStaticIcons();
+
+  // AOS init
+  AOS.init({
+    duration:  700,
+    easing:    'cubic-bezier(0.22, 1, 0.36, 1)',
+    once:      true,
+    offset:    60
+  });
+});
+
+/*
+ ┌─────────────────────────────────────────────────────┐
+ │  ANIMATION LIBRARIES USADAS / RECOMENDADAS         │
+ ├─────────────────────────────────────────────────────┤
+ │  ✅ AOS (Animate On Scroll)                         │
+ │     CSS+JS puro, config por data-* attrs           │
+ │     https://michalsnik.github.io/aos/               │
+ │                                                     │
+ │  ✅ CSS @keyframes nativos (hero, shimmer, pulse)   │
+ │     transition + CSS custom properties p/ temas    │
+ │                                                     │
+ │  💡 Lottie Web — JSON animations vetoriais         │
+ │     npm i lottie-web   ou CDN unpkg                │
+ │     Usar ficheiros .json de lottiefiles.com        │
+ │     lottie.loadAnimation({ path:'anim.json', ... })│
+ │                                                     │
+ │  💡 GSAP + ScrollTrigger — animações avançadas     │
+ │     CDN: https://cdnjs.cloudflare.com/ajax/libs/   │
+ │          gsap/3.12.2/gsap.min.js                   │
+ │     gsap.from('.hero h1', {y:40, opacity:0})       │
+ └─────────────────────────────────────────────────────┘
+*/
+</script>
+</body>
+</html>
