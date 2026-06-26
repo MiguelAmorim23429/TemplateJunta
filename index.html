@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Portal da Freguesia — Junta de Freguesia de Vale Verde</title>
+  <title>Portal da Freguesia — Junta de Freguesia</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -580,6 +580,100 @@ footer::before { content: ''; position: absolute; top: -160px; right: -120px; wi
 
 /* ── icon helper ── */
 .ic { display: inline-block; flex-shrink: 0; background-color: currentColor; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; -webkit-mask-size: contain; mask-size: contain; }
+
+/* ══════════════════════════════════════
+   MOBILE RESPONSIVE
+══════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Demo Banner */
+  .demo-inner { flex-direction: column; gap: 10px; padding: 12px 16px; }
+  .demo-text { font-size: 12.5px; }
+  .demo-contact { width: 100%; justify-content: center; padding: 10px 18px; }
+
+  /* Utility Bar */
+  .util-inner { justify-content: center; gap: 6px 12px; padding: 6px 16px; }
+  .util-left { justify-content: center; gap: 10px; }
+  .util-left span:last-child { display: none; }
+  .util-right { justify-content: center; gap: 10px; }
+  .theme-pill span { display: none; }
+
+  /* Header */
+  .header-inner { height: 60px; padding: 0 16px; }
+  .logo-badge { width: 40px; height: 40px; font-size: 14px; border-radius: 11px; }
+  .logo-name { font-size: 15px; }
+  .logo-label { font-size: 9.5px; }
+
+  /* Hero */
+  #hero { min-height: 70vh; }
+  .hero-inner { padding: clamp(48px,6vw,80px) 20px; }
+  .hero-content { flex: 1 1 100%; }
+  .hero h1 { font-size: clamp(28px,7vw,40px); }
+  .hero-sub { font-size: 14.5px; }
+  .hero-badge { font-size: 11px; padding: 6px 12px; margin-bottom: 20px; }
+  .hero-btns { flex-direction: column; }
+  .btn-hero-primary, .btn-hero-ghost { width: 100%; justify-content: center; padding: 14px 20px; font-size: 14px; }
+
+  /* Stats */
+  .stats-inner { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .stat-number { font-size: clamp(30px,8vw,40px); }
+  .stat-label { font-size: 12.5px; }
+
+  /* Services */
+  .services-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .service-card { padding: 18px 14px; }
+  .service-icon { width: 42px; height: 42px; }
+  .service-label { font-size: 13.5px; }
+  .service-desc { font-size: 12px; }
+
+  /* News */
+  .news-grid { grid-template-columns: 1fr; gap: 16px; }
+  .news-thumb { height: 180px; }
+  .news-title { font-size: 15.5px; }
+  .news-head-row { flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 24px; }
+
+  /* Avisos */
+  .aviso-body { flex-direction: column; gap: 10px; padding: 14px 16px; }
+  .aviso-meta { flex-wrap: wrap; gap: 8px; }
+  .aviso-titulo { font-size: 14.5px; }
+
+  /* Events */
+  .event-card { flex-direction: column; align-items: flex-start; gap: 14px; padding: 16px; }
+  .event-date { width: auto; min-width: 72px; }
+  .event-title { font-size: 15.5px; }
+  .event-meta { gap: 10px; font-size: 12px; }
+
+  /* Transparency */
+  .transp-grid { grid-template-columns: 1fr; gap: 14px; }
+  .transp-card { padding: 22px 20px; }
+
+  /* FAQ */
+  .faq-btn { font-size: 15px; padding: 18px 2px; }
+  .faq-body p { font-size: 14px; }
+
+  /* Sections */
+  .section { padding: clamp(40px,6vw,60px) 16px; }
+  .s-title { font-size: clamp(22px,5.5vw,30px); }
+  .s-desc { font-size: 14px; }
+  .s-head { margin-bottom: 28px; }
+
+  /* Footer */
+  .footer-grid { grid-template-columns: 1fr; gap: 32px; padding: 40px 20px 32px; }
+  .footer-bottom-inner { flex-direction: column; text-align: center; gap: 8px; }
+  .footer-legal { justify-content: center; }
+  .socials { justify-content: flex-start; }
+
+  /* Chatbot */
+  .chatbot-btn { width: 52px; height: 52px; bottom: 20px; right: 20px; }
+  .chatbot-btn::after { display: none; }
+  .chatbot-notif { width: 14px; height: 14px; font-size: 8px; }
+}
+
+@media (max-width: 400px) {
+  .services-grid { grid-template-columns: 1fr; }
+  .stats-inner { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 26px; }
+  .demo-text { font-size: 11.5px; }
+}
   </style>
 </head>
 <body>
@@ -841,15 +935,15 @@ footer::before { content: ''; position: absolute; top: -160px; right: -120px; wi
    CONFIG — editar aqui para qualquer freguesia
 ══════════════════════════════════════════════ */
 const CONFIG = {
-  municipio:   "Vale Verde",
-  sigla:       "VV",
+  municipio:   "A sua Freguesia",
+  sigla:       "JF",
   temaInicial: 0,
 
   contacto: {
-    morada:    "Rua da Junta, 1\n4900-000 Vale Verde",
+    morada:    "Rua da Junta, 1\n0000-000 Freguesia",
     telefone:  "+351 200 000 000",
-    email:     "geral@jf-valeverde.pt",
-    copyright: "© 2026 Junta de Freguesia de Vale Verde"
+    email:     "geral@jf-exemplo.pt",
+    copyright: "© 2026 Junta de Freguesia"
   },
 
   presidente: {
